@@ -1,66 +1,71 @@
 #!/bin/bash
-set -e
+set -euo pipefail  # Exit on errors, undefined variables, or failed pipelines
 
-# Define color codes
+# Define color codes for output formatting
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Function to echo in green
+# Function to print messages in green
 echo_green() {
     echo -e "${GREEN}$1${NC}"
 }
 
-# Function to echo in red
+# Function to print messages in red
 echo_red() {
     echo -e "${RED}$1${NC}"
 }
 
-# Ensure DATABASE environment variable is set
-if [ -z "$PGDB_NAME" ]; then
-    echo_red "Error: DATABASE environment variable is not set."
-    exit 1
-fi
+# Function to check if required environment variables are set
+check_env_vars() {
+    [[ -v PGDB_NAME ]] || { echo_red "Error: DATABASE environment variable (PGDB_NAME) is not set."; exit 1; }
+    [[ -v PGDB_HOST ]] || { echo_red "Error: HOST environment variable (PGDB_HOST) is not set."; exit 1; }
+    [[ -v PGDB_PORT ]] || { echo_red "Error: PORT environment variable (PGDB_PORT) is not set."; exit 1; }
+}
 
-
-if [ "$PGDB_NAME" = "db_postgres" ]; then
-    echo_green "Waiting for postgres..."
-
-    # Wait for PostgreSQL to be available
-    while ! nc -z $PGDB_HOST $PGDB_PORT; do
+# Function to wait for PostgreSQL to be available
+wait_for_postgres() {
+    echo_green "Waiting for PostgreSQL..."
+    until nc -z "$PGDB_HOST" "$PGDB_PORT"; do
         sleep 0.1
     done
+    echo_green "PostgreSQL is up and running!"
+}
 
-    echo_green "PostgreSQL started"
-fi
+# Main script execution
+main() {
+    check_env_vars
+    wait_for_postgres
 
-# Running migrations
-echo_green "Making the migrations..."
-if python manage.py makemigrations; then
-    echo_green "Migrations made successfully."
-else
-    echo_red "Error making migrations."
-    exit 1
-fi
+    case "$ROLE" in
+        backend)
+            echo_green "Creating and applying migrations..."
+            python manage.py makemigrations && python manage.py migrate
 
-# Applying migrations
-echo_green "Applying the migrations..."
-if python manage.py migrate; then
-    echo_green "Migrations applied successfully."
-else
-    echo_red "Error applying migrations."
-    exit 1
-fi
+            echo_green "Collecting static files..."
+            python manage.py collectstatic --noinput
 
-# Collecting static files
-echo_green "Collecting static files..."
-if python manage.py collectstatic --noinput; then
-    echo_green "Static files collected successfully."
-else
-    echo_red "Error collecting static files."
-    exit 1
-fi
+            echo_green "Starting Gunicorn server..."
+            exec gunicorn core.wsgi --bind 0.0.0.0:8000
 
-# Starting Gunicorn
-echo_green "Starting Gunicorn..."
-exec gunicorn core.wsgi --bind 0.0.0.0:8000
+            ;;
+        celery-worker)
+            echo_green "Starting Celery worker..."
+            exec celery -A core worker --loglevel=info
+
+            ;;
+        celery-beat)
+            echo_green "Starting Celery beat..."
+            exec celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+
+            ;;
+        *)
+            echo_red "Error: Unknown ROLE specified: $ROLE"
+            exit 1
+            ;;
+    esac
+}
+
+# Run the main function
+main "$@"
+

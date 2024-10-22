@@ -32,6 +32,8 @@ services:
         expose:
             - "8000"
         environment:
+            # role for entrypoint
+            - ROLE=backend
             # basic settings
             - SECRET_KEY=${SECRET_KEY}
             - DEBUG=${DEBUG}
@@ -57,37 +59,43 @@ services:
             - postgres
         restart: always
 
-    # celery-worker:
-    #     build:
-    #         context: ./core
-    #         dockerfile: Dockerfile.prod
-    #     container_name: celery-worker
-    #     command: celery -A core worker --loglevel=info
-    #     volumes:
-    #         - ./core:/usr/src/app
-    #     environment:
-    #         - PGDB_ENGINE=${PGDB_ENGINE}
-    #         - PGDB_NAME=${PGDB_NAME}
-    #         - PGDB_USER=${PGDB_USER}
-    #         - PGDB_PASSWORD=${PGDB_PASSWORD}
-    #         - PGDB_HOST=${PGDB_HOST}
-    #         - PGDB_PORT=${PGDB_PORT}
-    #     depends_on:
-    #         - redis
-    #         - backend
-    #         - postgres
-    #     restart: always
+    celery-worker:
+        build:
+            context: ./core
+            dockerfile: Dockerfile.prod
+        container_name: celery-worker
+        volumes:
+            - ./core:/usr/src/app
+        environment:
+            # role for entrypoint
+            - ROLE=celery-worker
+            # database configuration
+            - PGDB_ENGINE=${PGDB_ENGINE}
+            - PGDB_NAME=${PGDB_NAME}
+            - PGDB_USER=${PGDB_USER}
+            - PGDB_PASSWORD=${PGDB_PASSWORD}
+            - PGDB_HOST=${PGDB_HOST}
+            - PGDB_PORT=${PGDB_PORT}
+        depends_on:
+            - redis
+            - backend
+            - postgres
+        restart: always
 
-    # celery-beat:
-    #     build: .
-    #     container_name: celery-beat
-    #     command: celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
-    #     volumes:
-    #         - ./core:/usr/src/app
-    #     depends_on:
-    #         - redis
-    #         - backend
-    #         - postgres
+    celery-beat:
+        build:
+            context: ./core
+            dockerfile: Dockerfile.prod
+        container_name: celery-beat
+        environment:
+            # role for entrypoint
+            - ROLE=celery-beat
+        volumes:
+            - ./core:/usr/src/app
+        depends_on:
+            - redis
+            - backend
+            - postgres
 
     nginx:
         build:
