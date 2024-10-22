@@ -1,0 +1,37 @@
+# general modules
+django>=4.2,<4.3
+python-decouple
+pillow
+djangorestframework
+
+# third-party modules
+markdown     
+django-filter
+drf-yasg[validation]
+djangorestframework-simplejwt[crypto]
+djoser
+django-cors-headers
+locust
+
+# deployment modules
+gunicorn
+psycopg2-binary
+
+# email third-party modules
+django-mail-templated
+
+# refactoring and testing modules
+black
+flake8
+pytest
+pytest-django
+Faker
+
+# background processing and caching modules
+Redis
+celery
+django-redis
+django-celery-beat
+django-celery-results
+flower
+sqlalchemy
