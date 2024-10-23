@@ -34,8 +34,11 @@ wait_for_postgres() {
 
 # Main script execution
 main() {
-    check_env_vars
-    wait_for_postgres
+    # Only check for environment variables and PostgreSQL if the role is backend or celery-worker
+    if [[ "$ROLE" == "backend" || "$ROLE" == "celery-worker" ]]; then
+        check_env_vars
+        wait_for_postgres
+    fi
 
     case "$ROLE" in
         backend)
@@ -51,7 +54,7 @@ main() {
             ;;
         celery-worker)
             echo_green "Starting Celery worker..."
-            exec celery -A core worker --loglevel=info
+            exec celery -A core worker -l INFO
 
             ;;
         celery-beat)
@@ -68,4 +71,3 @@ main() {
 
 # Run the main function
 main "$@"
-

@@ -26,7 +26,7 @@ services:
             dockerfile: Dockerfile.prod
         container_name: backend
         volumes:
-            - ./core:/usr/src/app
+            - ./core:/home/app/core
             - static_volume:/home/app/core/static
             - media_volume:/home/app/core/media
         expose:
@@ -65,7 +65,7 @@ services:
             dockerfile: Dockerfile.prod
         container_name: celery-worker
         volumes:
-            - ./core:/usr/src/app
+            - ./core:/home/app/core
         environment:
             # role for entrypoint
             - ROLE=celery-worker
@@ -91,7 +91,7 @@ services:
             # role for entrypoint
             - ROLE=celery-beat
         volumes:
-            - ./core:/usr/src/app
+            - ./core:/home/app/core
         depends_on:
             - redis
             - backend
