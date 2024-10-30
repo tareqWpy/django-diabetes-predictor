@@ -211,12 +211,12 @@ CELERY_RESULT_BACKEND = (
 )
 CELERY_RESULT_EXTENDED = True
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_BEAT_SCHEDULE = {
-    "delete_completed_tasks": {
-        "task": "todo.tasks.deleteCompletedTasks",
-        "schedule": 20,
-    }
-}
+# CELERY_BEAT_SCHEDULE = {
+#     "delete_completed_tasks": {
+#         "task": "todo.tasks.deleteCompletedTasks",
+#         "schedule": 20,
+#     }
+# }
 
 # caches configuration
 CACHES = {
@@ -228,3 +228,13 @@ CACHES = {
         },
     }
 }
+
+
+# csrf configuration
+# CSRF_TRUSTED_ORIGINS = [
+#     config("VPS_ORIGIN", default="https://localhost"),
+# ]
+
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
