@@ -118,7 +118,7 @@ services:
                 - VITE_BACKEND_URL=${VITE_BACKEND_URL}
         container_name: frontend
         expose:
-            - "8080"
+            - "80"
         depends_on:
             - backend
 
