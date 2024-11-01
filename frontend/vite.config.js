@@ -10,5 +10,9 @@ export default defineConfig(() => {
                 process.env.VITE_BACKEND_URL
             ),
         },
+        server: {
+            host: "0.0.0.0",
+            port: 5173,
+        },
     };
 });

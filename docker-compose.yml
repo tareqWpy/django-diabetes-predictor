@@ -38,11 +38,14 @@ services:
 
     frontend:
         build:
-            context: ./frontend
+            context: frontend
             dockerfile: Dockerfile.dev
         container_name: frontend
-        volumes: -./frontend:/usr/src/app
+        volumes:
+            - ./frontend:/usr/src/app
         ports:
+            - "127.0.0.1:5173:5173"
+        command: npm run dev
 
     smtp4dev:
         image: rnwood/smtp4dev:v3
@@ -66,3 +69,4 @@ services:
 
 volumes:
     smtp4dev-data:
+    node_modules:
