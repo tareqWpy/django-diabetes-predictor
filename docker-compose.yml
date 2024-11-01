@@ -12,7 +12,7 @@ services:
             dockerfile: Dockerfile.dev
         container_name: backend
         volumes:
-            - ./core:/usr/src/app
+            - ./core:/home/app/core
         ports:
             - "127.0.0.1:8000:8000"
         environment:
@@ -31,7 +31,7 @@ services:
             - EMAIL_HOST_PASSWORD=
             #  database configuration
             - DB_ENGINE=django.db.backends.sqlite3
-            - DB_NAME=/usr/src/app/db.sqlite3
+            - DB_NAME=/home/app/core/db.sqlite3
         depends_on:
             - redis
         restart: always
