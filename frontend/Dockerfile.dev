@@ -1,0 +1,17 @@
+# Use Node image directly for development
+FROM node:23-alpine3.19 AS dev-stage
+ARG WORKDIR=/usr/src/app/frontend
+WORKDIR $WORKDIR
+
+# Copy package.json and install dependencies
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
+
+# Copy the rest of the files
+COPY . .
+
+# Expose the port that Vue's development server uses
+EXPOSE 8080
+
+# Run Vue's development server
+CMD ["npm", "run", "serve"]

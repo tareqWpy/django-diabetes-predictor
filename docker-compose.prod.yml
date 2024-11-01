@@ -110,22 +110,10 @@ services:
     #         - backend
     #         - postgres
 
-    frontend:
-        build:
-            context: ./frontend
-            dockerfile: Dockerfile.prod
-            args:
-                - VITE_BACKEND_URL=${VITE_BACKEND_URL}
-        container_name: frontend
-        expose:
-            - "80"
-        depends_on:
-            - backend
-
     nginx:
         build:
-            context: ./nginx
-            dockerfile: Dockerfile
+            context: .
+            dockerfile: nginx/Dockerfile.prod
         container_name: nginx
         ports:
             - "80:80"
@@ -137,7 +125,6 @@ services:
             - media_volume:/home/app/core/media
         depends_on:
             - redis
-            - frontend
             - backend
         restart: always
 
