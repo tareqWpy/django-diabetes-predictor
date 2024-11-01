@@ -1,10 +1,12 @@
 services:
     redis:
         container_name: redis
-        image: redis:7.4
+        image: redis:7.4.1
         ports:
             - "6379:6379"
-        command: redis-server --save 60 1 --loglevel warning
+        command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+        environment:
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
 
     backend:
         build:
@@ -32,6 +34,9 @@ services:
             #  database configuration
             - DB_ENGINE=django.db.backends.sqlite3
             - DB_NAME=/home/app/core/db.sqlite3
+            - PGDB_PASSWORD=${PGDB_PASSWORD}
+            # redis configuration
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
         depends_on:
             - redis
         restart: always

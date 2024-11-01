@@ -209,9 +209,9 @@ DJOSER = {
 # if you don't have docker, you should use redis as broker like this:
 # CELERY_BROKER_URL = 'redis://localhost:6379'
 
-CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_BROKER_URL = f"redis://:{config('REDIS_PASSWORD')}@redis:6379/0"
 CELERY_RESULT_BACKEND = (
-    "db+postgresql://root:vMi8KYTHs09IBM97WYlfrFnO@postgres:5432/db_postgres"
+    f"db+postgresql://root:{config('PGDB_PASSWORD')}@postgres:5432/db_postgres"
 )
 CELERY_RESULT_EXTENDED = True
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
