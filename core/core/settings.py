@@ -178,6 +178,7 @@ EMAIL_BACKEND = config(
 EMAIL_HOST = config("EMAIL_HOST", default="smtp4dev")
 EMAIL_PORT = config("EMAIL_PORT", default=25)
 # the EMAIL_USE_TLS disabled because of development mode
+# to prevent STARTTLS error
 # must be enable for production mode
 # EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=False)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default=None)
