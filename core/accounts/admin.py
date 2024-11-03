@@ -1,4 +1,4 @@
-from accounts.models import User
+from accounts.models import Profile, User
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm
@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 class CustomUserCreationForm(UserCreationForm):
     """
-    A class for Custom Form.
+    Class for Custom Form.
     """
 
     class Meta:
@@ -14,20 +14,15 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ("email",)
 
 
+@admin.register(User)
 class CustomUserAdmin(UserAdmin):
     """
-    A class for presenting the Custom User models data in Admin panel.
+    Class for presenting the Custom User models data in Admin panel.
     """
 
     model = User
     add_form = CustomUserCreationForm
-    list_display = (
-        "email",
-        "created_date",
-        "last_login",
-        "is_superuser",
-        "is_active",
-    )
+    list_display = ("email", "is_superuser", "is_active")
     list_filter = ("email", "is_active")
     serching_fields = ("email",)
     ordering = ("email",)
@@ -94,6 +89,6 @@ class CustomUserAdmin(UserAdmin):
 
 
 """
-Registeration for Admin panel to present data of Users.
+Registeration for Admin panel to present data.
 """
-admin.site.register(User, CustomUserAdmin)
+admin.site.register(Profile)

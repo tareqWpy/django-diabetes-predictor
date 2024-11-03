@@ -3,7 +3,7 @@ from django.core import exceptions
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from ...models import User
+from ...models import Profile, User
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -53,3 +53,18 @@ class RegistrationSerializer(serializers.ModelSerializer):
         """
         validated_data.pop("password1", None)
         return User.objects.create_user(**validated_data)
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(source="user.email", read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = [
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "image",
+            "description",
+        ]
