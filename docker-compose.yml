@@ -36,54 +36,51 @@ services:
             #  database configuration
             - DB_ENGINE=django.db.backends.sqlite3
             - DB_NAME=/home/app/core/db.sqlite3
-            - PGDB_PASSWORD=${PGDB_PASSWORD}
             # redis configuration
             - REDIS_PASSWORD=${REDIS_PASSWORD}
         depends_on:
             - redis
         restart: always
 
-    # celery-worker:
-    #     build:
-    #         context: ./core
-    #         dockerfile: Dockerfile.dev
-    #     container_name: celery-worker
-    #     environment:
-    #         # role for entrypoint
-    #         - ROLE=celery-worker
-    #         #  database configuration
-    #         - DB_ENGINE=django.db.backends.sqlite3
-    #         - DB_NAME=/home/app/core/db.sqlite3
-    #         - PGDB_PASSWORD=${PGDB_PASSWORD}
-    #         # redis configuration
-    #         - REDIS_PASSWORD=${REDIS_PASSWORD}
-    #     volumes:
-    #         - ./core:/home/app/core
-    #     depends_on:
-    #         - redis
-    #         - backend
-    #     restart: always
+    celery-worker:
+        build:
+            context: ./core
+            dockerfile: Dockerfile.dev
+        container_name: celery-worker
+        environment:
+            # role for entrypoint
+            - ROLE=celery-worker
+            #  database configuration
+            - DB_ENGINE=django.db.backends.sqlite3
+            - DB_NAME=/home/app/core/db.sqlite3
+            # redis configuration
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
+        volumes:
+            - ./core:/home/app/core
+        depends_on:
+            - redis
+            - backend
+        restart: always
 
-    # celery-beat:
-    #     build:
-    #         context: ./core
-    #         dockerfile: Dockerfile.dev
-    #     container_name: celery-beat
-    #     environment:
-    #         # role for entrypoint
-    #         - ROLE=celery-beat
-    #         #  database configuration
-    #         - DB_ENGINE=django.db.backends.sqlite3
-    #         - DB_NAME=/home/app/core/db.sqlite3
-    #         - PGDB_PASSWORD=${PGDB_PASSWORD}
-    #         # redis configuration
-    #         - REDIS_PASSWORD=${REDIS_PASSWORD}
-    #     volumes:
-    #         - ./core:/home/app/core
-    #     depends_on:
-    #         - redis
-    #         - backend
-    #     restart: always
+    celery-beat:
+        build:
+            context: ./core
+            dockerfile: Dockerfile.dev
+        container_name: celery-beat
+        environment:
+            # role for entrypoint
+            - ROLE=celery-beat
+            #  database configuration
+            - DB_ENGINE=django.db.backends.sqlite3
+            - DB_NAME=/home/app/core/db.sqlite3
+            # redis configuration
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
+        volumes:
+            - ./core:/home/app/core
+        depends_on:
+            - redis
+            - backend
+        restart: always
 
     # frontend:
     #     build:

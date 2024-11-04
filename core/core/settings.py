@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 from celery.schedules import crontab
@@ -180,7 +181,7 @@ EMAIL_HOST = config("EMAIL_HOST", default="smtp4dev")
 EMAIL_PORT = config("EMAIL_PORT", default=25)
 # the EMAIL_USE_TLS disabled because of development mode
 # to prevent STARTTLS error
-# must be enable for production mode
+# ! must be enable for production mode
 # EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=False)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default=None)
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default=None)
@@ -209,6 +210,34 @@ DJOSER = {
 }
 
 
+# JWT configuration
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=180),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=50),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": False,
+    "ALGORITHM": "HS256",
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+}
+
+
 # celery configuration
 # redis is a broker for celery
 # if you don't have docker, you should use redis as broker like this:
@@ -216,18 +245,21 @@ DJOSER = {
 # we use decouple for easier handling for password changes in future
 
 CELERY_BROKER_URL = f"redis://:{config('REDIS_PASSWORD')}@redis:6379/0"
-CELERY_RESULT_BACKEND = (
-    f"db+postgresql://root:{config('PGDB_PASSWORD')}@postgres:5432/db_postgres"
-)
+
+# ! comment CELERY_RESULT_BACKEND for only development environment
+# CELERY_RESULT_BACKEND = (
+#     f"db+postgresql://root:{config('PGDB_PASSWORD')}@postgres:5432/db_postgres"
+# )
+
 CELERY_RESULT_EXTENDED = True
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
-# CELERY_BEAT_SCHEDULE = {
-#     "delete_completed_tasks": {
-#         "task": "todo.tasks.deleteCompletedTasks",
-#         "schedule": 20,
-#     }
-# }
+CELERY_BEAT_SCHEDULE = {
+    "delete_inactive_users": {
+        "task": "accounts.tasks.delete_inactive_users",
+        "schedule": crontab(hour=12),
+    }
+}
 
 # caches configuration
 CACHES = {
