@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # ? via manage.py
     "accounts",
+    "predictor",
     # ? via pip
     "rest_framework",
     "rest_framework.authtoken",
