@@ -3,6 +3,8 @@ django>=4.2,<4.3
 python-decouple
 pillow
 djangorestframework
+joblib
+scikit-learn
 
 # third-party modules
 markdown     

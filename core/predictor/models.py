@@ -4,23 +4,19 @@ from django.urls import reverse
 
 class Predictor(models.Model):
     patient = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
-    female_age = models.PositiveIntegerField()  # Assuming age is a positive integer
-    AMH = models.FloatField()  # Anti-Müllerian hormone level
-    FSH = models.FloatField()  # Follicle-stimulating hormone level
-    no_embryos = models.PositiveIntegerField()  # Number of embryos
-    endoendometrial_thickness = models.FloatField()  # Endometrial thickness in mm
-    sperm_count = models.PositiveIntegerField()  # Sperm count
-    sperm_morphology = models.FloatField()  # Sperm morphology percentage
-    follicle_size = models.FloatField()  # Size of follicles in mm
-    retrieved_oocytes = models.PositiveIntegerField()  # Number of retrieved oocytes
-    quality_of_embryo = models.CharField(
-        max_length=255,
-    )  # Quality of embryos as a string
-    retrieved_oocytes_MI = models.PositiveIntegerField()  # Mature oocytes (MI stage)
-    retrieved_oocytes_MII = models.PositiveIntegerField()  # Mature oocytes (MII stage)
-    result = models.CharField(
-        max_length=255,
-    )  # Outcome/result as a string
+    female_age = models.FloatField()
+    AMH = models.FloatField()
+    FSH = models.FloatField()
+    no_embryos = models.FloatField()
+    endoendometerial_tickness = models.FloatField()
+    sperm_count = models.FloatField()
+    sperm_morphology = models.FloatField()
+    follicle_size = models.FloatField()
+    no_of_retreived_oocytes = models.FloatField()
+    qality_of_embryo = models.FloatField()
+    quality_of_retreived_oocytes_MI = models.FloatField()
+    quality_of_retreived_oocytes_MII = models.FloatField()
+    result = models.FloatField()
 
     created_date = models.DateTimeField(auto_now_add=True)
 
