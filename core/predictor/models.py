@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Predictor(models.Model):
@@ -25,3 +26,6 @@ class Predictor(models.Model):
 
     def __str__(self):
         return f"Predictor for {self.patient} - Result: {self.result}"
+
+    def get_absolute_api_url(self):
+        return reverse("predictor:api-v1:predictor-detail", kwargs={"pk": self.pk})
