@@ -1,11 +1,9 @@
-FROM python:3.11.4-slim-buster AS builder
+FROM python:3.11.4-slim-buster
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV HOME=/home/app
 ENV APP_HOME=$HOME/core
-
-RUN addgroup --system app && adduser --system --group app && mkdir -p $APP_HOME
 
 WORKDIR $APP_HOME
 
@@ -19,8 +17,5 @@ RUN apt-get update && apt-get install -y dos2unix && \
 
 COPY . .
 
-RUN chown -R app:app $APP_HOME
-
-USER app
 
 ENTRYPOINT ["/bin/bash", "./entrypoint.dev.sh"]

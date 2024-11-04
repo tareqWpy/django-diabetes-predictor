@@ -1,0 +1,15 @@
+FROM node:lts-alpine3.20 AS development
+
+# Set the working directory
+ARG WORKDIR=/usr/src/app
+WORKDIR $WORKDIR
+
+# Copy package.json and package-lock.json to the working directory
+COPY package.json ./
+COPY package-lock.json ./
+
+# Install dependencies
+RUN npm install --legacy-peer-deps
+
+# Copy the rest of the application
+COPY . ./

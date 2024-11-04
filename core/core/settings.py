@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # ? via manage.py
+    "accounts",
     # ? via pip
     "rest_framework",
     "rest_framework.authtoken",
@@ -157,7 +158,7 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ! user manager config
-# AUTH_USER_MODEL = "accounts.User"
+AUTH_USER_MODEL = "accounts.User"
 
 # configurations rest_famework
 REST_FRAMEWORK = {
@@ -176,7 +177,10 @@ EMAIL_BACKEND = config(
 )
 EMAIL_HOST = config("EMAIL_HOST", default="smtp4dev")
 EMAIL_PORT = config("EMAIL_PORT", default=25)
-EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=False)
+# the EMAIL_USE_TLS disabled because of development mode
+# to prevent STARTTLS error
+# must be enable for production mode
+# EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=False)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default=None)
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default=None)
 
@@ -205,18 +209,24 @@ DJOSER = {
 
 
 # celery configuration
-CELERY_BROKER_URL = "redis://redis:6379/0"
+# redis is a broker for celery
+# if you don't have docker, you should use redis as broker like this:
+# CELERY_BROKER_URL = 'redis://localhost:6379'
+# we use decouple for easier handling for password changes in future
+
+CELERY_BROKER_URL = f"redis://:{config('REDIS_PASSWORD')}@redis:6379/0"
 CELERY_RESULT_BACKEND = (
-    "db+postgresql://root:vMi8KYTHs09IBM97WYlfrFnO@postgres:5432/db_postgres"
+    f"db+postgresql://root:{config('PGDB_PASSWORD')}@postgres:5432/db_postgres"
 )
 CELERY_RESULT_EXTENDED = True
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_BEAT_SCHEDULE = {
-    "delete_completed_tasks": {
-        "task": "todo.tasks.deleteCompletedTasks",
-        "schedule": 20,
-    }
-}
+
+# CELERY_BEAT_SCHEDULE = {
+#     "delete_completed_tasks": {
+#         "task": "todo.tasks.deleteCompletedTasks",
+#         "schedule": 20,
+#     }
+# }
 
 # caches configuration
 CACHES = {
@@ -228,3 +238,13 @@ CACHES = {
         },
     }
 }
+
+
+# csrf configuration
+# CSRF_TRUSTED_ORIGINS = [
+#     config("VPS_ORIGIN", default="https://localhost"),
+# ]
+
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
