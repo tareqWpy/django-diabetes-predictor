@@ -46,7 +46,14 @@ class PredictorModelViewSet(
         # Save the predictor with result
         predictor = serializer.save(result=result)
 
-        return Response({"result": predictor.result}, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "details": {
+                    "result": predictor.result,
+                }
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
     def preprocess_data(self, data):
         scaler_file_path = SERVICES_DIR.joinpath("scaler.pkl")
