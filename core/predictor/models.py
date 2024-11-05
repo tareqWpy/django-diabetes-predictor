@@ -11,7 +11,7 @@ class Predictor(models.Model):
 
     Attributes:
     - patient (ForeignKey): A reference to the associated patient, linked to the Profile model in the accounts app.
-    - female_age (FloatField): The age of the female patient in years.
+    - female_age (IntegerField): The age of the female patient in years.
     - AMH (FloatField): Anti-Müllerian hormone level, a marker for ovarian reserve.
     - FSH (FloatField): Follicle-stimulating hormone level, indicative of ovulatory function.
     - no_embryos (FloatField): The number of embryos retrieved during the procedure.
@@ -23,7 +23,7 @@ class Predictor(models.Model):
     - qality_of_embryo (FloatField): Quality assessment of the embryos.
     - quality_of_retrieved_oocytes_MI (FloatField): Quality assessment of retrieved oocytes at the metaphase I stage.
     - quality_of_retrieved_oocytes_MII (FloatField): Quality assessment of retrieved oocytes at the metaphase II stage.
-    - result (FloatField): The final result of the prediction model.
+    - result (IntegerField): The final result of the prediction model.
     - success_probability (FloatField): The predicted probability of success for the treatment, defaults to 0 if not set.
     - created_date (DateTimeField): Timestamp for when the predictor record was created, auto-filled upon creation.
 
@@ -36,7 +36,7 @@ class Predictor(models.Model):
     """
 
     patient = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
-    female_age = models.FloatField()
+    female_age = models.IntegerField()
     AMH = models.FloatField()
     FSH = models.FloatField()
     no_embryos = models.FloatField()
@@ -48,8 +48,8 @@ class Predictor(models.Model):
     qality_of_embryo = models.FloatField()
     quality_of_retreived_oocytes_MI = models.FloatField()
     quality_of_retreived_oocytes_MII = models.FloatField()
-    result = models.FloatField()
-    success_probability = models.FloatField(default=0)
+    result = models.IntegerField()
+    success_probability = models.FloatField()
 
     created_date = models.DateTimeField(auto_now_add=True)
 
