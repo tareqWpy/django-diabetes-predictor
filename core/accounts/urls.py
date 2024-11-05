@@ -3,7 +3,7 @@ from django.urls import include, path
 # The application name
 app_name = "accounts"
 """
-Urls for account management.
+Urls related to the accounts app.
 """
 
 urlpatterns = [

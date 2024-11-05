@@ -1,3 +1,43 @@
+"""
+Celery task to delete inactive user accounts.
+
+This task identifies user accounts that have been inactive for more than 
+7 days (i.e., created more than 7 days ago and marked as inactive) and 
+removes them from the database. It logs the number of inactive users found 
+and deleted, as well as any errors that may occur during the process.
+
+Procedure:
+1. Calculate the date 7 days ago from the current time.
+2. Query the database for users who:
+   - Were created more than 7 days ago.
+   - Are marked as inactive (is_active=False).
+3. Log the count of inactive users found.
+4. If inactive users are found, delete them in an atomic transaction to ensure 
+   database integrity.
+5. Log the IDs of the users being deleted and the count of successful 
+   deletions.
+
+Error Handling:
+- Any exceptions encountered during the process will be logged as errors.
+
+Usage:
+This function can be scheduled to run periodically, such as daily, to 
+clean up the user database from inactive accounts.
+
+Dependencies:
+- Requires Django ORM with a User model defined in the application's models.
+- Uses Celery for task scheduling.
+
+Logging:
+- The logger will provide information on the number of inactive users 
+  found and deleted, as well as warnings for cases with no user IDs 
+  to be deleted and errors encountered.
+
+Returns:
+- None. However, the function's side effects include deleting users 
+  from the database and logging information to the configured logger.
+"""
+
 import datetime
 import logging
 
