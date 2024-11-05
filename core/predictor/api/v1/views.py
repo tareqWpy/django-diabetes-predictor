@@ -78,12 +78,14 @@ class PredictorModelViewSet(
         scaled_data = self.preprocess_data(validated_data)
         result = self.get_prediction(scaled_data)
 
-        serializer.save(result=result)
+        predictor_instance = serializer.save(result=result)
 
         return Response(
             {
                 "details": {
-                    "result": result,
+                    # returns result as a number
+                    "result": result[0],
+                    "id": predictor_instance.id,
                 }
             },
             status=status.HTTP_201_CREATED,
