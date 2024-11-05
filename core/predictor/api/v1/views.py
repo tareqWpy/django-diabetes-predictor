@@ -34,7 +34,7 @@ class PredictorModelViewSet(
     This ViewSet provides operations to create, retrieve, list, and delete
     Predictor model entries. It includes functionality for processing input data,
     making predictions using a trained machine learning model, and returning the
-    results along with their success probabilities.
+    results.
 
     Args:
         mixins.CreateModelMixin: Mixin that provides create operation.
@@ -76,16 +76,14 @@ class PredictorModelViewSet(
         validated_data = serializer.validated_data
 
         scaled_data = self.preprocess_data(validated_data)
-        result, success_probability = self.get_prediction(scaled_data)
+        result = self.get_prediction(scaled_data)
 
-        serializer.save(result=result, success_probability=success_probability)
+        serializer.save(result=result)
 
         return Response(
             {
                 "details": {
-                    # returns result as a number
-                    "result": result[0],
-                    "success_probability": success_probability,
+                    "result": result,
                 }
             },
             status=status.HTTP_201_CREATED,
@@ -116,9 +114,7 @@ class PredictorModelViewSet(
         model = joblib.load(model_file_path)
         result = model.predict(data)
 
-        success_probability = model.predict_proba(data)[0][1]
-
-        return result, success_probability
+        return result
 
     def get_queryset(self):
         user = self.request.user

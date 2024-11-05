@@ -48,7 +48,6 @@ class PredictorSerializers(serializers.ModelSerializer):
             "quality_of_retreived_oocytes_MI",
             "quality_of_retreived_oocytes_MII",
             "result",
-            "success_probability",
             "relative_url",
             "absolute_url",
             "created_date",
