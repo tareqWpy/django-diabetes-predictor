@@ -4,8 +4,6 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from ..models import Predictor
-
 
 @pytest.fixture
 def api_client():
