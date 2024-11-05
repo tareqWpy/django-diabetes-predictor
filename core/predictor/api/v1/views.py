@@ -5,6 +5,7 @@ from pathlib import Path
 import joblib
 import sklearn
 from accounts.models import Profile
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status, viewsets
 from rest_framework.filters import SearchFilter
@@ -41,15 +42,15 @@ class PredictorModelViewSet(
         validated_data = serializer.validated_data
 
         scaled_data = self.preprocess_data(validated_data)
-        result = self.get_prediction(scaled_data)
+        result, success_probability = self.get_prediction(scaled_data)
 
-        # Save the predictor with result
-        predictor = serializer.save(result=result)
+        serializer.save(result=result, success_probability=success_probability)
 
         return Response(
             {
                 "details": {
-                    "result": predictor.result,
+                    "result": result[0],
+                    "success_probability": success_probability,
                 }
             },
             status=status.HTTP_201_CREATED,
@@ -73,21 +74,18 @@ class PredictorModelViewSet(
             data["quality_of_retreived_oocytes_MII"],
         ]
 
-        print([features])
-        print(scaler.transform([features]))
         return scaler.transform([features])
 
     def get_prediction(self, data):
         model_file_path = SERVICES_DIR.joinpath("Stacking_clf.pkl")
         model = joblib.load(model_file_path)
-        print(model.predict(data))
-        return model.predict(data)
+        result = model.predict(data)
+
+        success_probability = model.predict_proba(data)[0][1]
+
+        return result, success_probability
 
     def get_queryset(self):
         user = self.request.user
-        try:
-            profile = Profile.objects.get(user=user)
-        except Profile.DoesNotExist:
-            return Predictor.objects.none()
-
+        profile = get_object_or_404(Profile, user=user)
         return Predictor.objects.filter(patient=profile)

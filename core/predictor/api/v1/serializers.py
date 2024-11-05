@@ -27,11 +27,12 @@ class PredictorSerializers(serializers.ModelSerializer):
             "quality_of_retreived_oocytes_MI",
             "quality_of_retreived_oocytes_MII",
             "result",
+            "success_probability",
             "relative_url",
             "absolute_url",
             "created_date",
         ]
-        read_only_fields = ["patient", "result"]
+        read_only_fields = ["patient", "result", "success_probability"]
 
     def get_abs_url(self, obj):
         request = self.context.get("request")

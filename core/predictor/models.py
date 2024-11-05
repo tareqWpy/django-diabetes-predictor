@@ -17,11 +17,12 @@ class Predictor(models.Model):
     quality_of_retreived_oocytes_MI = models.FloatField()
     quality_of_retreived_oocytes_MII = models.FloatField()
     result = models.FloatField()
+    success_probability = models.FloatField(default=0)
 
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Predictor for {self.patient} - Result: {self.result}"
+        return f"Predictor for {self.patient} - Result: {self.result} - success_probability: {self.success_probability}"
 
     def get_absolute_api_url(self):
         return reverse("predictor:api-v1:predictor-detail", kwargs={"pk": self.pk})
