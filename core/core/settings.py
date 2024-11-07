@@ -15,7 +15,7 @@ from pathlib import Path
 
 from celery.schedules import crontab
 
-# importing decouple for .env.
+# importing decouple for .env
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     "predictor",
     # ? via pip
     "rest_framework",
-    "rest_framework.authtoken",
+    # commented beacuse the default authentication is based on JWT authentication
+    # "rest_framework.authtoken",
     "django_filters",
     "drf_yasg",
     "rest_framework_simplejwt",
@@ -167,7 +168,8 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
+        # commented beacuse the default authentication is based on JWT authentication
+        # "rest_framework.authentication.TokenAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ]
 }
