@@ -52,7 +52,7 @@ class PredictorSerializers(serializers.ModelSerializer):
             "absolute_url",
             "created_date",
         ]
-        read_only_fields = ["patient", "result", "success_probability"]
+        read_only_fields = ["patient", "result"]
 
     def get_abs_url(self, obj):
         request = self.context.get("request")
@@ -66,8 +66,6 @@ class PredictorSerializers(serializers.ModelSerializer):
         if request.parser_context.get("kwargs").get("pk"):
             rep.pop("relative_url", None)
             rep.pop("absolute_url", None)
-        else:
-            rep.pop("updated_date", None)
 
         return rep
 
