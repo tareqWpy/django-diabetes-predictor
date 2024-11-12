@@ -9,12 +9,9 @@ class ClientPredictorAdmin(admin.ModelAdmin):
     """
 
     list_display = (
+        "id",
         "patient",
-        "female_age",
-        "AMH",
-        "FSH",
-        "no_embryos",
-        "sperm_count",
+        "result",
         "created_date",
     )
     list_filter = ("created_date", "female_age")
@@ -29,13 +26,10 @@ class DoctorPredictorAdmin(admin.ModelAdmin):
     """
 
     list_display = (
+        "id",
         "doctor",
         "patient",
-        "female_age",
-        "AMH",
-        "FSH",
-        "no_embryos",
-        "sperm_count",
+        "result",
         "created_date",
     )
     list_filter = ("created_date", "female_age")

@@ -181,7 +181,11 @@ class PredictionByDoctorViewSet(
     serializer_class = DoctorPredictorSerializers
     premission_class = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = {"result": ["exact"], "created_date": ["gte", "lte"]}
+    filterset_fields = {
+        "result": ["exact"],
+        "patient": ["exact"],
+        "created_date": ["gte", "lte"],
+    }
     ordering_fields = ["created_date", "result"]
     pagination_class = DefaultPagination
 

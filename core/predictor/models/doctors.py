@@ -53,7 +53,7 @@ class DoctorPredictor(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Predictor for {self.patient} - Result: {self.result}"
+        return f"Doctor: {self.doctor} - Patient: {self.patient}"
 
     def get_absolute_api_url(self):
         return reverse(
