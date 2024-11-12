@@ -34,7 +34,7 @@ class PredictionByClientViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
-    """ViewSet for managing Predictor model instances.
+    """ViewSet for managing Prediction by Client model instances.
 
     This ViewSet provides operations to create, retrieve, list, and delete
     Predictor model entries. It includes functionality for processing input data,
@@ -144,6 +144,40 @@ class PredictionByDoctorViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
+    """ViewSet for managing Prediction by Doctor model instances.
+
+    This ViewSet provides operations to create, retrieve, list, and delete
+    Predictor model entries. It includes functionality for processing input data,
+    making predictions using a trained machine learning model, and returning the
+    results.
+
+    Args:
+        mixins.CreateModelMixin: Mixin that provides create operation.
+        mixins.RetrieveModelMixin: Mixin that provides retrieve operation.
+        mixins.DestroyModelMixin: Mixin that provides delete operation.
+        mixins.ListModelMixin: Mixin that provides list operation.
+        viewsets.GenericViewSet: Base class for creating generic viewsets.
+
+    Attributes:
+        permission_classes (list): A list of permissions that the view requires.
+        serializer_class (type): The serializer class used for input and output.
+        filter_backends (list): A list of backends used for filtering querysets.
+        filterset_fields (dict): Fields and their lookup expressions for filtering.
+        ordering_fields (list): Fields that can be used for ordering the results.
+        pagination_class (type): The pagination class for paginating results.
+
+    Returns:
+        Response: A Django Rest Framework Response object containing the result
+            of the operations performed (e.g., created instance, retrieved
+            instance, etc.).
+
+    Methods:
+        create(request, *args, **kwargs): Handles creation of a new Predictor entry.
+        preprocess_data(data): Scales input features for prediction.
+        get_prediction(data): Makes a prediction based on the processed data.
+        get_queryset(): Retrieves a queryset of Predictor instances for the authenticated user.
+    """
+
     serializer_class = DoctorPredictorSerializers
     premission_class = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter]
@@ -221,6 +255,8 @@ class PatientModelViewSet(
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
+    """A Class for creating patients based on its properties."""
+
     permission_classes = [IsAuthenticated]
     serializer_class = PatientSerializers
 

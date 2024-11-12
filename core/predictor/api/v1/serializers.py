@@ -10,21 +10,6 @@ class PredictorSerializers(serializers.ModelSerializer):
 
     This serializer handles the serialization and deserialization of
     Predictor model instances, providing additional fields for API URLs.
-
-    Attributes:
-        relative_url (URLField): A read-only field that provides the relative API URL.
-        absolute_url (SerializerMethodField): A method field that returns the absolute URL
-            of the predictor instance.
-
-    Raises:
-        serializers.ValidationError: Raised when a user attempts to create a predictor
-            without proper authentication.
-        serializers.ValidationError: Raised when the authenticated user does not have
-            an associated profile in the system.
-
-    Returns:
-        dict: A representation of the predictor instance, including all specified fields
-              and URLs, suitable for use in API responses.
     """
 
     relative_url = serializers.URLField(source="get_absolute_api_url", read_only=True)
