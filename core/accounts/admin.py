@@ -3,6 +3,10 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm
 
+"""
+Registeration for Admin panel to present data.
+"""
+
 
 class CustomUserCreationForm(UserCreationForm):
     """
@@ -22,7 +26,7 @@ class CustomUserAdmin(UserAdmin):
 
     model = User
     add_form = CustomUserCreationForm
-    list_display = ("email", "is_superuser", "is_active", "created_date")
+    list_display = ("email", "type", "is_active", "created_date")
     list_filter = ("email", "is_active")
     serching_fields = ("email",)
     ordering = ("email",)
@@ -37,6 +41,7 @@ class CustomUserAdmin(UserAdmin):
                 "fields": (
                     "email",
                     "password",
+                    "type",
                 ),
             },
         ),
@@ -79,6 +84,7 @@ class CustomUserAdmin(UserAdmin):
                     "email",
                     "password1",
                     "password2",
+                    "type",
                     "is_staff",
                     "is_active",
                     "is_superuser",
@@ -88,7 +94,7 @@ class CustomUserAdmin(UserAdmin):
     )
 
 
-"""
-Registeration for Admin panel to present data.
-"""
-admin.site.register(Profile)
+@admin.register(Profile)
+class CustomProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "first_name", "last_name", "user_type")
+    searching_fields = ("user", "first_name", "last_name", "phone_number")

@@ -7,6 +7,12 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+class UserType(models.IntegerChoices):
+    patient = 1, _("patient")
+    doctor = 2, _("doctor")
+    superuser = 3, _("superuser")
+
+
 class UserManager(BaseUserManager):
     """
     Custom user model manager where email is the uinque idnetifires for authentication instead of username.
@@ -31,6 +37,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("type", UserType.superuser.value)
 
         if extra_fields.get("is_staff") is not True:
             raise ValueError(_("SuperUser must have is_staff=True"))
@@ -48,6 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    type = models.IntegerField(choices=UserType.choices, default=UserType.patient.value)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
