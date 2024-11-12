@@ -3,7 +3,7 @@ from pathlib import Path
 
 import joblib
 import sklearn
-from accounts.models import Profile
+from accounts.models import Profile, UserType
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status, viewsets
@@ -11,9 +11,13 @@ from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ...models import Predictor
+from ...models import Patient, PredictionByDoctor, Predictor
 from .paginations import DefaultPagination
-from .serializers import PredictorSerializers
+from .serializers import (
+    DoctorPredictorSerializers,
+    PatientSerializers,
+    PredictorSerializers,
+)
 
 # Set the SERVICES_DIR path to the "services" directory,
 # which is located two levels up from the current directory.
@@ -121,4 +125,39 @@ class PredictorModelViewSet(
     def get_queryset(self):
         user = self.request.user
         profile = get_object_or_404(Profile, user=user)
-        return Predictor.objects.filter(patient=profile)
+        user_type = profile.user_type
+
+        if user_type == UserType.superuser:
+            return Predictor.objects.all()
+        elif user_type == UserType.patient:
+            return Predictor.objects.filter(patient=profile)
+        elif user_type == UserType.doctor:
+            return PredictionByDoctor.objects.filter(doctor=profile)
+        else:
+            return Predictor.objects.none()
+
+
+class PredictionByDoctoViewSet(PredictorModelViewSet):
+    serializer_class = DoctorPredictorSerializers
+
+
+class PatientModelViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PatientSerializers
+
+    def get_queryset(self):
+        user = self.request.user
+        profile = get_object_or_404(Profile, user=user)
+        return Patient.objects.filter(manager=profile)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        profile = get_object_or_404(Profile, user=user)
+        serializer.save(manager=profile)
