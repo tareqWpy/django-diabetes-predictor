@@ -23,8 +23,9 @@ class UserManager(BaseUserManager):
         Create and save a User with the given email and password.
         """
         if not email:
-            raise ValueError(-("email must be set"))
+            raise ValueError(_("email must be set"))
         email = self.normalize_email(email)
+
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save()
@@ -51,11 +52,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     This is a class to define custom user for accounts app.
     """
 
-    is_superuser = models.BooleanField(default=False)
     email = models.EmailField(max_length=255, unique=True)
+    is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
-    type = models.IntegerField(choices=UserType.choices, default=UserType.patient.value)
+    type = models.IntegerField(choices=UserType.choices)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
