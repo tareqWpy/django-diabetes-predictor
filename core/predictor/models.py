@@ -3,7 +3,7 @@ from django.db import models
 from django.urls import reverse
 
 
-class Predictor(models.Model):
+class PatientPredictor(models.Model):
     """
     Predictor Model
 
@@ -55,10 +55,12 @@ class Predictor(models.Model):
         return f"Predictor for {self.patient} - Result: {self.result}"
 
     def get_absolute_api_url(self):
-        return reverse("predictor:api-v1:predictor-detail", kwargs={"pk": self.pk})
+        return reverse(
+            "predictor:api-v1:patient-predictor-detail", kwargs={"pk": self.pk}
+        )
 
 
-class PredictionByDoctor(models.Model):
+class DoctorPredictor(models.Model):
     doctor = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
     patient = models.ForeignKey("Patient", on_delete=models.SET_NULL, null=True)
     female_age = models.IntegerField(
@@ -84,7 +86,7 @@ class PredictionByDoctor(models.Model):
 
     def get_absolute_api_url(self):
         return reverse(
-            "predictor:api-v1:doctor-detail", kwargs={"pk": self.pk}
+            "predictor:api-v1:doctor-predictor-detail", kwargs={"pk": self.pk}
         )
 
 

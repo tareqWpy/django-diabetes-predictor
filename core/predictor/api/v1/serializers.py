@@ -2,7 +2,7 @@ from accounts.models import Profile, User
 from django.urls import reverse
 from rest_framework import serializers
 
-from ...models import Patient, PredictionByDoctor, Predictor
+from ...models import DoctorPredictor, Patient, PatientPredictor
 
 
 class PredictorSerializers(serializers.ModelSerializer):
@@ -31,7 +31,7 @@ class PredictorSerializers(serializers.ModelSerializer):
     absolute_url = serializers.SerializerMethodField(method_name="get_abs_url")
 
     class Meta:
-        model = Predictor
+        model = PatientPredictor
         fields = [
             "id",
             "patient",
@@ -57,7 +57,7 @@ class PredictorSerializers(serializers.ModelSerializer):
     def get_abs_url(self, obj):
         request = self.context.get("request")
         return request.build_absolute_uri(
-            reverse("predictor:api-v1:predictor-detail", args=[obj.pk])
+            reverse("predictor:api-v1:patient-predictor-detail", args=[obj.pk])
         )
 
     def to_representation(self, obj):
@@ -92,7 +92,7 @@ class DoctorPredictorSerializers(serializers.ModelSerializer):
     absolute_url = serializers.SerializerMethodField(method_name="get_abs_url")
 
     class Meta:
-        model = PredictionByDoctor
+        model = DoctorPredictor
         fields = [
             "id",
             "doctor",
@@ -119,7 +119,7 @@ class DoctorPredictorSerializers(serializers.ModelSerializer):
     def get_abs_url(self, obj):
         request = self.context.get("request")
         return request.build_absolute_uri(
-            reverse("predictor:api-v1:doctor-detail", args=[obj.pk])
+            reverse("predictor:api-v1:doctor-predictor-detail", args=[obj.pk])
         )
 
     def to_representation(self, obj):

@@ -7,11 +7,12 @@ from accounts.models import Profile, UserType
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status, viewsets
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ...models import Patient, PredictionByDoctor, Predictor
+from ...models import DoctorPredictor, Patient, PatientPredictor
 from .paginations import DefaultPagination
 from .serializers import (
     DoctorPredictorSerializers,
@@ -26,7 +27,7 @@ SERVICES_DIR = Path(
 )
 
 
-class PredictorModelViewSet(
+class PredictionByClientViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
@@ -67,7 +68,7 @@ class PredictorModelViewSet(
         get_queryset(): Retrieves a queryset of Predictor instances for the authenticated user.
     """
 
-    permission_classes = [IsAuthenticated]
+    premission_class = [IsAuthenticated]
     serializer_class = PredictorSerializers
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = {"result": ["exact"], "created_date": ["gte", "lte"]}
@@ -125,20 +126,91 @@ class PredictorModelViewSet(
     def get_queryset(self):
         user = self.request.user
         profile = get_object_or_404(Profile, user=user)
-        user_type = profile.user_type
 
-        if user_type == UserType.superuser:
-            return Predictor.objects.all()
-        elif user_type == UserType.patient:
-            return Predictor.objects.filter(patient=profile)
-        elif user_type == UserType.doctor:
-            return PredictionByDoctor.objects.filter(doctor=profile)
+        if profile.user_type in {UserType.patient, UserType.superuser}:
+            return PatientPredictor.objects.filter(patient=profile)
         else:
-            return Predictor.objects.none()
+            raise PermissionDenied(
+                {
+                    "details": "Access denied: you must be a patient or superuser to use this feature."
+                }
+            )
 
 
-class PredictionByDoctoViewSet(PredictorModelViewSet):
+class PredictionByDoctorViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
     serializer_class = DoctorPredictorSerializers
+    premission_class = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = {"result": ["exact"], "created_date": ["gte", "lte"]}
+    ordering_fields = ["created_date", "result"]
+    pagination_class = DefaultPagination
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
+        scaled_data = self.preprocess_data(validated_data)
+        result = self.get_prediction(scaled_data)
+
+        predictor_instance = serializer.save(result=result)
+
+        return Response(
+            {
+                "details": {
+                    # returns result as a number
+                    "result": result[0],
+                    "id": predictor_instance.id,
+                }
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    def preprocess_data(self, data):
+        scaler_file_path = SERVICES_DIR.joinpath("scaler.pkl")
+        scaler = joblib.load(scaler_file_path)
+        features = [
+            data["female_age"],
+            data["AMH"],
+            data["FSH"],
+            data["no_embryos"],
+            data["endoendometerial_tickness"],
+            data["sperm_count"],
+            data["sperm_morphology"],
+            data["follicle_size"],
+            data["no_of_retreived_oocytes"],
+            data["qality_of_embryo"],
+            data["quality_of_retreived_oocytes_MI"],
+            data["quality_of_retreived_oocytes_MII"],
+        ]
+
+        return scaler.transform([features])
+
+    def get_prediction(self, data):
+        model_file_path = SERVICES_DIR.joinpath("Stacking_clf.pkl")
+        model = joblib.load(model_file_path)
+        result = model.predict(data)
+
+        return result
+
+    def get_queryset(self):
+        user = self.request.user
+        profile = get_object_or_404(Profile, user=user)
+
+        if profile.user_type in {UserType.doctor, UserType.superuser}:
+            return DoctorPredictor.objects.filter(doctor=profile)
+        else:
+            raise PermissionDenied(
+                {
+                    "details": "Access denied: you must be a doctor or superuser to use this feature."
+                }
+            )
 
 
 class PatientModelViewSet(
@@ -155,7 +227,13 @@ class PatientModelViewSet(
     def get_queryset(self):
         user = self.request.user
         profile = get_object_or_404(Profile, user=user)
-        return Patient.objects.filter(manager=profile)
+
+        if profile.user_type in {UserType.doctor, UserType.superuser}:
+            return Patient.objects.filter(manager=profile)
+
+        raise PermissionDenied(
+            detail="Access denied: you must be a doctor or superuser to use this feature."
+        )
 
     def perform_create(self, serializer):
         user = self.request.user
