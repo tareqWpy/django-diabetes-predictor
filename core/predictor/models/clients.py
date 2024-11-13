@@ -3,9 +3,9 @@ from django.db import models
 from django.urls import reverse
 
 
-class PatientPredictor(models.Model):
+class ClientPredictor(models.Model):
     """
-    Patient Predictor Model
+    Client Predictor Model
 
     This Django model represents predictors for outcomes in assisted reproductive technology.
     It captures essential medical parameters for evaluating fertility potential in individual patients.

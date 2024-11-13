@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from faker import Faker
 
-from ...models import DoctorPredictor, Patient, PatientPredictor
+from ...models import ClientPredictor, DoctorPredictor, Patient
 
 
 class Command(BaseCommand):
@@ -73,7 +73,7 @@ class Command(BaseCommand):
         if client:
             try:
                 client_user = User.objects.create_user(
-                    email="client@admin.com",
+                    email="client2@admin.com",
                     password="9889taat",
                     is_active=True,
                     type=UserType.client.value,
@@ -109,7 +109,7 @@ class Command(BaseCommand):
             for _ in range(patient_count):
                 try:
 
-                    manager_profile = Profile.objects.get(id=6)
+                    manager_profile = Profile.objects.get(id=4)
 
                     patient = Patient.objects.create(
                         manager=manager_profile,

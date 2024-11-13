@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import DoctorPredictor, Patient, PatientPredictor
+from .models import ClientPredictor, DoctorPredictor, Patient
 
 
 class ClientPredictorAdmin(admin.ModelAdmin):
@@ -67,5 +67,5 @@ class PatientAdmin(admin.ModelAdmin):
 Registeration classes for Admin panel.
 """
 admin.site.register(Patient, PatientAdmin)
-admin.site.register(PatientPredictor, ClientPredictorAdmin)
+admin.site.register(ClientPredictor, ClientPredictorAdmin)
 admin.site.register(DoctorPredictor, DoctorPredictorAdmin)

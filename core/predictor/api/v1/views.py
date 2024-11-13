@@ -11,7 +11,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 
-from ...models import DoctorPredictor, Patient, PatientPredictor
+from ...models import ClientPredictor, DoctorPredictor, Patient
 from .paginations import DefaultPagination
 from .permissions import IsAuthenticatedAndActive
 from .serializers import (
@@ -132,7 +132,7 @@ class PredictionByClientViewSet(
         profile = get_object_or_404(Profile, user=user)
 
         if profile.user_type in {UserType.client, UserType.superuser}:
-            return PatientPredictor.objects.filter(client=profile)
+            return ClientPredictor.objects.filter(client=profile)
         else:
             raise PermissionDenied(
                 {

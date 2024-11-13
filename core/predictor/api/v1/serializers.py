@@ -1,8 +1,9 @@
-from accounts.models import Profile, User
+from accounts.models import Profile, User, UserType
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from ...models import DoctorPredictor, Patient, PatientPredictor
+from ...models import ClientPredictor, DoctorPredictor, Patient
 
 
 class ClientPredictorSerializers(serializers.ModelSerializer):
@@ -20,7 +21,7 @@ class ClientPredictorSerializers(serializers.ModelSerializer):
             absolute URL for the ClientPredictor instance.
 
     Meta:
-        model (PatientPredictor): The model class to be serialized.
+        model (ClientPredictor): The model class to be serialized.
         fields (list): List of fields to be included in the serialized output.
         read_only_fields (list): Fields that should not be writable by users.
 
@@ -29,7 +30,7 @@ class ClientPredictorSerializers(serializers.ModelSerializer):
         to_representation(obj): Customizes the representation for the serializer,
             removing URL fields based on the request context.
         create(validated_data): Handles the creation of a new ClientPredictor
-            instance, validating user authentication and profile existence.
+            instance, validating user authentication,type and profile existence.
 
     Raises:
         serializers.ValidationError: If the user is not authenticated, the profile
@@ -40,7 +41,7 @@ class ClientPredictorSerializers(serializers.ModelSerializer):
     absolute_url = serializers.SerializerMethodField(method_name="get_abs_url")
 
     class Meta:
-        model = PatientPredictor
+        model = ClientPredictor
         fields = [
             "id",
             "client",
@@ -83,13 +84,21 @@ class ClientPredictorSerializers(serializers.ModelSerializer):
 
         if user.is_anonymous:
             raise serializers.ValidationError(
-                "User must be authenticated to create a predictor."
+                _("User must be authenticated to create a predictor.")
             )
 
         try:
             profile = Profile.objects.get(user=user)
         except Profile.DoesNotExist:
-            raise serializers.ValidationError("Profile does not exist for this user.")
+            raise serializers.ValidationError(
+                _("Profile does not exist for this user.")
+            )
+
+        # Check if the user type is valid
+        if profile.user_type not in [UserType.client.value]:
+            raise serializers.ValidationError(
+                _("Access denied. Invalid user type, you must be a client.")
+            )
 
         validated_data["client"] = profile
         return super().create(validated_data)
@@ -119,7 +128,7 @@ class DoctorPredictorSerializers(serializers.ModelSerializer):
         to_representation(obj): Customizes the representation for the serializer,
             removing URL fields based on the request context.
         create(validated_data): Handles the creation of a new DoctorPredictor
-            instance, validating user authentication and profile existence.
+            instance, validating user authentication,type and profile existence.
 
     Raises:
         serializers.ValidationError: If the user is not authenticated, profile
@@ -182,8 +191,12 @@ class DoctorPredictorSerializers(serializers.ModelSerializer):
         except Profile.DoesNotExist:
             raise serializers.ValidationError("Profile does not exist for this user.")
 
-        validated_data["doctor"] = profile
+        if profile.user_type not in [UserType.doctor.value]:
+            raise serializers.ValidationError(
+                _("Access denied. Invalid user type, you must be a doctor.")
+            )
 
+        validated_data["doctor"] = profile
         instance = super().create(validated_data)
 
         if not Patient.objects.filter(id=instance.patient.id, manager=profile).exists():
@@ -270,6 +283,11 @@ class PatientSerializers(serializers.ModelSerializer):
             profile = Profile.objects.get(user=user)
         except Profile.DoesNotExist:
             raise serializers.ValidationError("Profile does not exist for this user.")
+
+        if profile.user_type not in [UserType.doctor.value]:
+            raise serializers.ValidationError(
+                _("Access denied. Invalid user type, you must be a doctor.")
+            )
 
         validated_data["manager"] = profile
 
