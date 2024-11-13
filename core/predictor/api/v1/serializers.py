@@ -130,7 +130,15 @@ class DoctorPredictorSerializers(serializers.ModelSerializer):
             raise serializers.ValidationError("Profile does not exist for this user.")
 
         validated_data["doctor"] = profile
-        return super().create(validated_data)
+
+        instance = super().create(validated_data)
+
+        if not Patient.objects.filter(id=instance.patient.id, manager=profile).exists():
+            raise serializers.ValidationError(
+                "This patient does not exist for this user."
+            )
+
+        return instance
 
 
 class PatientSerializers(serializers.ModelSerializer):

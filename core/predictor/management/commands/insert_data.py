@@ -1,6 +1,7 @@
 import random
 
 from accounts.models import Profile, User, UserType
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from faker import Faker
@@ -49,11 +50,12 @@ class Command(BaseCommand):
         superuser = options["superuser"]
         client = options["client"]
         doctor = options["doctor"]
+        patient_count = options["patient"]
 
         if superuser:
             try:
                 superuser = User.objects.create_superuser(
-                    email="admin@admin2.com",
+                    email="admin@admin.com",
                     password="9889taat",
                 )
                 self.stdout.write(
@@ -71,7 +73,7 @@ class Command(BaseCommand):
         if client:
             try:
                 client_user = User.objects.create_user(
-                    email="client@admin2.com",
+                    email="client@admin.com",
                     password="9889taat",
                     is_active=True,
                     type=UserType.client.value,
@@ -89,7 +91,7 @@ class Command(BaseCommand):
         if doctor:
             try:
                 doctor_user = User.objects.create_user(
-                    email="doctor@admin2.com",
+                    email="doctor@admin.com",
                     password="9889taat",
                     is_active=True,
                     type=UserType.doctor.value,
@@ -103,3 +105,27 @@ class Command(BaseCommand):
                 self.stdout.write(
                     self.style.WARNING("Doctor creation failed: Email already exists.")
                 )
+        if patient_count >= 0:
+            for _ in range(patient_count):
+                try:
+
+                    manager_profile = Profile.objects.get(id=6)
+
+                    patient = Patient.objects.create(
+                        manager=manager_profile,
+                        first_name=self.fake.first_name(),
+                        last_name=self.fake.last_name(),
+                    )
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            f"Patient created successfully! ID: {patient.id}, Name: {patient.first_name} {patient.last_name}"
+                        )
+                    )
+                except IntegrityError:
+                    self.stdout.write(
+                        self.style.WARNING("Patient creation failed: Duplicate data.")
+                    )
+                except ObjectDoesNotExist:
+                    self.stdout.write(
+                        self.style.ERROR("Profile with ID 9 does not exist.")
+                    )
