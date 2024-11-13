@@ -11,6 +11,7 @@ class DoctorPredictor(models.Model):
     It contains various medical parameters relevant to fertility assessments for individual patients.
 
     Attributes:
+    - doctor (ForeignKey): A reference to the associated doctor, linked to the Profile model in the accounts app.
     - patient (ForeignKey): A reference to the associated patient, linked to the Profile model in the accounts app.
     - female_age (IntegerField): The age of the female patient in years.
     - AMH (DecimalField): Anti-Müllerian hormone level, a marker for ovarian reserve.

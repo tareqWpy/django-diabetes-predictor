@@ -15,7 +15,7 @@ router.register(
 router.register(
     "client",
     viewset=views.PredictionByClientViewSet,
-    basename="patient-predictor",
+    basename="client-predictor",
 )
 router.register("patient", viewset=views.PatientModelViewSet, basename="patient")
 

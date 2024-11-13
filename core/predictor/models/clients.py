@@ -11,7 +11,7 @@ class PatientPredictor(models.Model):
     It contains various medical parameters relevant to fertility assessments for individual patients.
 
     Attributes:
-    - patient (ForeignKey): A reference to the associated patient, linked to the Profile model in the accounts app.
+    - client (ForeignKey): A reference to the associated patient, linked to the Profile model in the accounts app.
     - female_age (IntegerField): The age of the female patient in years.
     - AMH (DecimalField): Anti-Müllerian hormone level, a marker for ovarian reserve.
     - FSH (DecimalField): Follicle-stimulating hormone level, indicative of ovulatory function.
@@ -32,7 +32,7 @@ class PatientPredictor(models.Model):
     - get_absolute_api_url(): Returns the API endpoint URL for accessing details of the predictor instance.
     """
 
-    patient = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
+    client = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
     female_age = models.IntegerField(
         validators=[MinValueValidator(10), MaxValueValidator(99)]
     )
@@ -52,9 +52,9 @@ class PatientPredictor(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Predictor for {self.patient} - Result: {self.result}"
+        return f"Predictor for {self.client} - Result: {self.result}"
 
     def get_absolute_api_url(self):
         return reverse(
-            "predictor:api-v1:patient-predictor-detail", kwargs={"pk": self.pk}
+            "predictor:api-v1:client-predictor-detail", kwargs={"pk": self.pk}
         )

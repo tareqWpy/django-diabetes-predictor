@@ -5,7 +5,7 @@ from rest_framework import serializers
 from ...models import DoctorPredictor, Patient, PatientPredictor
 
 
-class PredictorSerializers(serializers.ModelSerializer):
+class ClientPredictorSerializers(serializers.ModelSerializer):
     """Serializer Class for Predictor model instances.
 
     This serializer handles the serialization and deserialization of
@@ -19,7 +19,7 @@ class PredictorSerializers(serializers.ModelSerializer):
         model = PatientPredictor
         fields = [
             "id",
-            "patient",
+            "client",
             "female_age",
             "AMH",
             "FSH",
@@ -37,12 +37,12 @@ class PredictorSerializers(serializers.ModelSerializer):
             "absolute_url",
             "created_date",
         ]
-        read_only_fields = ["patient", "result"]
+        read_only_fields = ["client", "result"]
 
     def get_abs_url(self, obj):
         request = self.context.get("request")
         return request.build_absolute_uri(
-            reverse("predictor:api-v1:patient-predictor-detail", args=[obj.pk])
+            reverse("predictor:api-v1:client-predictor-detail", args=[obj.pk])
         )
 
     def to_representation(self, obj):
@@ -67,7 +67,7 @@ class PredictorSerializers(serializers.ModelSerializer):
         except Profile.DoesNotExist:
             raise serializers.ValidationError("Profile does not exist for this user.")
 
-        validated_data["patient"] = profile
+        validated_data["client"] = profile
         return super().create(validated_data)
 
 

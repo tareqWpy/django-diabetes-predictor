@@ -10,7 +10,7 @@ class ClientPredictorAdmin(admin.ModelAdmin):
 
     list_display = (
         "id",
-        "patient",
+        "client",
         "result",
         "created_date",
     )

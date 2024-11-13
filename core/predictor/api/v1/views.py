@@ -9,15 +9,15 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status, viewsets
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ...models import DoctorPredictor, Patient, PatientPredictor
 from .paginations import DefaultPagination
+from .permissions import IsAuthenticatedAndActive
 from .serializers import (
+    ClientPredictorSerializers,
     DoctorPredictorSerializers,
     PatientSerializers,
-    PredictorSerializers,
 )
 
 # Set the SERVICES_DIR path to the "services" directory,
@@ -68,10 +68,11 @@ class PredictionByClientViewSet(
         get_queryset(): Retrieves a queryset of Predictor instances for the authenticated user.
     """
 
-    premission_class = [IsAuthenticated]
-    serializer_class = PredictorSerializers
+    premission_class = [IsAuthenticatedAndActive]
+    serializer_class = ClientPredictorSerializers
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = {"result": ["exact"], "created_date": ["gte", "lte"]}
+    search_fields = ["result"]
     ordering_fields = ["created_date", "result"]
     pagination_class = DefaultPagination
 
@@ -127,12 +128,12 @@ class PredictionByClientViewSet(
         user = self.request.user
         profile = get_object_or_404(Profile, user=user)
 
-        if profile.user_type in {UserType.patient, UserType.superuser}:
-            return PatientPredictor.objects.filter(patient=profile)
+        if profile.user_type in {UserType.client, UserType.superuser}:
+            return PatientPredictor.objects.filter(client=profile)
         else:
             raise PermissionDenied(
                 {
-                    "details": "Access denied: you must be a patient or superuser to use this feature."
+                    "details": "Access denied: you must be a client or superuser to use this feature."
                 }
             )
 
@@ -179,13 +180,14 @@ class PredictionByDoctorViewSet(
     """
 
     serializer_class = DoctorPredictorSerializers
-    premission_class = [IsAuthenticated]
+    premission_class = [IsAuthenticatedAndActive]
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = {
         "result": ["exact"],
         "patient": ["exact"],
         "created_date": ["gte", "lte"],
     }
+    search_fields = ["result", "patient"]
     ordering_fields = ["created_date", "result"]
     pagination_class = DefaultPagination
 
@@ -259,10 +261,19 @@ class PatientModelViewSet(
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
-    """A Class for creating patients based on its properties."""
+    """A ViewSet for managing patient records."""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedAndActive]
     serializer_class = PatientSerializers
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = {
+        "id": ["iexact"],
+        "first_name": ["iexact", "istartswith"],
+        "last_name": ["iexact", "istartswith"],
+        "created_date": ["gte", "lte"],
+    }
+    search_fields = ["first_name", "last_name"]
+    ordering_fields = ["created_date"]
 
     def get_queryset(self):
         user = self.request.user

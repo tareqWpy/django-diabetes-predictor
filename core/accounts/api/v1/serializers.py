@@ -12,7 +12,7 @@ from ...models import Profile, User, UserType
 class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
     type = serializers.ChoiceField(
         choices=[
-            (UserType.patient.value, UserType.patient.label),
+            (UserType.client.value, UserType.client.label),
             (UserType.doctor.value, UserType.doctor.label),
         ],
         required=True,
@@ -34,9 +34,9 @@ class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
         )
 
     def validate_type(self, value):
-        if value not in [UserType.patient.value, UserType.doctor.value]:
+        if value not in [UserType.client.value, UserType.doctor.value]:
             raise serializers.ValidationError(
-                _("Invalid user type. Please select either 'patient' or 'doctor'."),
+                _("Invalid user type. Please select either 'client' or 'doctor'."),
             )
         return value
 
