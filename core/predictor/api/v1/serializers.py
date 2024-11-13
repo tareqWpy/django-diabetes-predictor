@@ -195,6 +195,8 @@ class DoctorPredictorSerializers(serializers.ModelSerializer):
 
 
 class PatientSerializers(serializers.ModelSerializer):
+    relative_url = serializers.URLField(source="get_absolute_api_url", read_only=True)
+    absolute_url = serializers.SerializerMethodField(method_name="get_abs_url")
 
     class Meta:
         model = Patient
@@ -205,5 +207,39 @@ class PatientSerializers(serializers.ModelSerializer):
             "last_name",
             "created_date",
             "updated_date",
+            "relative_url",
+            "absolute_url",
         ]
-        read_only_fields = ["manager"]
+        read_only_fields = ["manager", "created_date", "updated_date"]
+
+    def get_abs_url(self, obj):
+        request = self.context.get("request")
+        return request.build_absolute_uri(
+            reverse("predictor:api-v1:patient-detail", args=[obj.pk])
+        )
+
+    def to_representation(self, obj):
+        request = self.context.get("request")
+        rep = super().to_representation(obj)
+        if request.parser_context.get("kwargs").get("pk"):
+            rep.pop("relative_url", None)
+            rep.pop("absolute_url", None)
+
+        return rep
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+
+        if user.is_anonymous:
+            raise serializers.ValidationError(
+                "User must be authenticated to create a patient."
+            )
+
+        try:
+            profile = Profile.objects.get(user=user)
+        except Profile.DoesNotExist:
+            raise serializers.ValidationError("Profile does not exist for this user.")
+
+        validated_data["manager"] = profile
+
+        return super().create(validated_data)

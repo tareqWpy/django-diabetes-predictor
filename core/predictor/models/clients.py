@@ -58,3 +58,6 @@ class PatientPredictor(models.Model):
         return reverse(
             "predictor:api-v1:client-predictor-detail", kwargs={"pk": self.pk}
         )
+
+    def get_full_name(self):
+        return f"{self.client.first_name} {self.client.last_name}"

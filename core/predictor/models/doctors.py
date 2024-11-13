@@ -79,3 +79,6 @@ class DoctorPredictor(models.Model):
         return reverse(
             "predictor:api-v1:doctor-predictor-detail", kwargs={"pk": self.pk}
         )
+
+    def get_full_name(self):
+        return f"{self.doctor.first_name} {self.doctor.last_name}"

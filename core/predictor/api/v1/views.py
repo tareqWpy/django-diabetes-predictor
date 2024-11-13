@@ -320,8 +320,3 @@ class PatientModelViewSet(
         raise PermissionDenied(
             detail="Access denied: you must be a doctor or superuser to use this feature."
         )
-
-    def perform_create(self, serializer):
-        user = self.request.user
-        profile = get_object_or_404(Profile, user=user)
-        serializer.save(manager=profile)

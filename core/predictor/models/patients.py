@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Patient(models.Model):
@@ -24,3 +25,9 @@ class Patient(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
+    def get_absolute_api_url(self):
+        return reverse("predictor:api-v1:patient-detail", kwargs={"pk": self.pk})
