@@ -26,7 +26,30 @@ def common_user():
 
 
 @pytest.fixture
-def sample_input_data():
+def client_input_data():
+    """
+    Returns a sample of data for testing API endpoints, using common_user fixture.
+    """
+    input_data = {
+        "female_age": 37,
+        "AMH": "2",
+        "FSH": "1",
+        "no_embryos": 5,
+        "endoendometerial_tickness": "8",
+        "sperm_count": "36",
+        "sperm_morphology": 3,
+        "follicle_size": 18,
+        "no_of_retreived_oocytes": 16,
+        "qality_of_embryo": 7,
+        "quality_of_retreived_oocytes_MI": 0,
+        "quality_of_retreived_oocytes_MII": 12,
+    }
+
+    return input_data
+
+
+@pytest.fixture
+def doctor_input_data():
     """
     Returns a sample of data for testing API endpoints, using common_user fixture.
     """
