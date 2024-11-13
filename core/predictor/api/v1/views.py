@@ -34,38 +34,41 @@ class PredictionByClientViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
-    """ViewSet for managing Prediction by Client model instances.
+    """
+    ViewSet for managing predictions made by clients.
 
-    This ViewSet provides operations to create, retrieve, list, and delete
-    Predictor model entries. It includes functionality for processing input data,
-    making predictions using a trained machine learning model, and returning the
-    results.
-
-    Args:
-        mixins.CreateModelMixin: Mixin that provides create operation.
-        mixins.RetrieveModelMixin: Mixin that provides retrieve operation.
-        mixins.DestroyModelMixin: Mixin that provides delete operation.
-        mixins.ListModelMixin: Mixin that provides list operation.
-        viewsets.GenericViewSet: Base class for creating generic viewsets.
+    This ViewSet allows clients to create, retrieve, list, and delete prediction
+    instances. It incorporates authentication and authorization checks to ensure
+    that only valid users have access to create or view predictions.
 
     Attributes:
-        permission_classes (list): A list of permissions that the view requires.
-        serializer_class (type): The serializer class used for input and output.
-        filter_backends (list): A list of backends used for filtering querysets.
-        filterset_fields (dict): Fields and their lookup expressions for filtering.
-        ordering_fields (list): Fields that can be used for ordering the results.
-        pagination_class (type): The pagination class for paginating results.
-
-    Returns:
-        Response: A Django Rest Framework Response object containing the result
-            of the operations performed (e.g., created instance, retrieved
-            instance, etc.).
+        serializer_class (Serializer): The serializer class used for validating
+            and serializing prediction data.
+        permission_classes (list): A list of permissions required for accessing
+            the ViewSet, ensuring that users are authenticated and active.
+        filter_backends (list): List of filter backends used for querying the
+            Prediction instances.
+        filterset_fields (dict): Fields available for filtering query results.
+        search_fields (list): Fields available for search functionality.
+        ordering_fields (list): Fields available for ordering query results.
+        pagination_class (Pagination): The pagination class used for paginating
+            the predictions list.
 
     Methods:
-        create(request, *args, **kwargs): Handles creation of a new Predictor entry.
-        preprocess_data(data): Scales input features for prediction.
-        get_prediction(data): Makes a prediction based on the processed data.
-        get_queryset(): Retrieves a queryset of Predictor instances for the authenticated user.
+        create(request, *args, **kwargs): Validates the input data, processes it,
+            and creates a new prediction instance, returning the result.
+        preprocess_data(data): Scales input features using a pre-trained scaler
+            for model prediction.
+        get_prediction(data): Loads a pre-trained model and makes predictions
+            based on the scaled data.
+        get_queryset(): Retrieves the queryset of predictions based on the user's
+            profile, ensuring that only authorized users can access their respective
+            predictions.
+
+    Raises:
+        serializers.ValidationError: If the input data is not valid.
+        PermissionDenied: If the user does not have the necessary permissions
+            to access predictions.
     """
 
     premission_class = [IsAuthenticatedAndActive]
@@ -145,38 +148,41 @@ class PredictionByDoctorViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
-    """ViewSet for managing Prediction by Doctor model instances.
+    """
+    ViewSet for managing predictions made by doctors.
 
-    This ViewSet provides operations to create, retrieve, list, and delete
-    Predictor model entries. It includes functionality for processing input data,
-    making predictions using a trained machine learning model, and returning the
-    results.
-
-    Args:
-        mixins.CreateModelMixin: Mixin that provides create operation.
-        mixins.RetrieveModelMixin: Mixin that provides retrieve operation.
-        mixins.DestroyModelMixin: Mixin that provides delete operation.
-        mixins.ListModelMixin: Mixin that provides list operation.
-        viewsets.GenericViewSet: Base class for creating generic viewsets.
+    This ViewSet allows doctors to create, retrieve, list, and delete prediction
+    instances. It incorporates authentication and authorization checks to ensure
+    that only valid users have access to create or view predictions.
 
     Attributes:
-        permission_classes (list): A list of permissions that the view requires.
-        serializer_class (type): The serializer class used for input and output.
-        filter_backends (list): A list of backends used for filtering querysets.
-        filterset_fields (dict): Fields and their lookup expressions for filtering.
-        ordering_fields (list): Fields that can be used for ordering the results.
-        pagination_class (type): The pagination class for paginating results.
-
-    Returns:
-        Response: A Django Rest Framework Response object containing the result
-            of the operations performed (e.g., created instance, retrieved
-            instance, etc.).
+        serializer_class (Serializer): The serializer class used for validating
+            and serializing prediction data.
+        permission_class (list): A list of permissions required for accessing
+            the ViewSet, ensuring that users are authenticated and active.
+        filter_backends (list): List of filter backends used for querying the
+            Prediction instances.
+        filterset_fields (dict): Fields available for filtering query results.
+        search_fields (list): Fields available for search functionality.
+        ordering_fields (list): Fields available for ordering query results.
+        pagination_class (Pagination): The pagination class used for paginating
+            the predictions list.
 
     Methods:
-        create(request, *args, **kwargs): Handles creation of a new Predictor entry.
-        preprocess_data(data): Scales input features for prediction.
-        get_prediction(data): Makes a prediction based on the processed data.
-        get_queryset(): Retrieves a queryset of Predictor instances for the authenticated user.
+        create(request, *args, **kwargs): Validates the input data, processes it,
+            and creates a new prediction instance, returning the result.
+        preprocess_data(data): Scales input features using a pre-trained scaler
+            for model prediction.
+        get_prediction(data): Loads a pre-trained model and makes predictions
+            based on the scaled data.
+        get_queryset(): Retrieves the queryset of predictions based on the user's
+            profile, ensuring that only authorized users can access their respective
+            predictions.
+
+    Raises:
+        serializers.ValidationError: If the input data is not valid.
+        PermissionDenied: If the user does not have the necessary permissions
+            to access predictions.
     """
 
     serializer_class = DoctorPredictorSerializers
@@ -261,7 +267,36 @@ class PatientModelViewSet(
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
-    """A ViewSet for managing patient records."""
+    """
+    ViewSet for managing patient records.
+
+    This ViewSet allows authorized users to create, retrieve, list, update,
+    and delete patient instances. It incorporates authentication and
+    authorization checks to ensure that only valid users have access
+    to manage patient records.
+
+    Attributes:
+        serializer_class (Serializer): The serializer class used for validating
+            and serializing patient data.
+        permission_classes (list): A list of permissions required for accessing
+            the ViewSet, ensuring that users are authenticated and active.
+        filter_backends (list): List of filter backends used for querying the
+            patient instances.
+        filterset_fields (dict): Fields available for filtering query results.
+        search_fields (list): Fields available for search functionality.
+        ordering_fields (list): Fields available for ordering query results.
+
+    Methods:
+        get_queryset(): Retrieves the queryset of patients based on the user's
+            profile, ensuring that only authorized users can access their
+            respective patient records.
+        perform_create(serializer): Saves a new patient instance linked to the
+            profile of the authenticated user.
+
+    Raises:
+        PermissionDenied: If the user does not have the necessary permissions
+            to access or manage patients.
+    """
 
     permission_classes = [IsAuthenticatedAndActive]
     serializer_class = PatientSerializers

@@ -5,32 +5,51 @@ from django.urls import reverse
 
 class DoctorPredictor(models.Model):
     """
-    Doctor Predictor Model
+    Represents a predictor for assisted reproductive technology outcomes.
 
-    This Django model represents a predictor for assisted reproductive technology outcomes.
-    It contains various medical parameters relevant to fertility assessments for individual patients.
+    This model captures various fertility-related medical parameters for individual patients, facilitating assessments
+    of their likelihood of successful outcomes in assisted reproductive procedures.
 
     Attributes:
-    - doctor (ForeignKey): A reference to the associated doctor, linked to the Profile model in the accounts app.
-    - patient (ForeignKey): A reference to the associated patient, linked to the Profile model in the accounts app.
-    - female_age (IntegerField): The age of the female patient in years.
-    - AMH (DecimalField): Anti-Müllerian hormone level, a marker for ovarian reserve.
-    - FSH (DecimalField): Follicle-stimulating hormone level, indicative of ovulatory function.
-    - no_embryos (IntegerField): The number of embryos retrieved during the procedure.
-    - endoendometrial_tickness (DecimalField): Thickness of the endometrium, important for implantation.
-    - sperm_count (DecimalField): Total sperm count available for fertilization.
-    - sperm_morphology (IntegerField): Quality of sperm morphology as assessed under a microscope.
-    - follicle_size (IntegerField): Average size of the ovarian follicles, crucial for ovulation timing.
-    - no_of_retrieved_oocytes (IntegerField): Number of oocytes retrieved during the egg retrieval process.
-    - qality_of_embryo (IntegerField): Quality assessment of the embryos.
-    - quality_of_retrieved_oocytes_MI (IntegerField): Quality assessment of retrieved oocytes at the metaphase I stage.
-    - quality_of_retrieved_oocytes_MII (IntegerField): Quality assessment of retrieved oocytes at the metaphase II stage.
-    - result (IntegerField): The final result of the prediction model.
-    - created_date (DateTimeField): Timestamp for when the predictor record was created, auto-filled upon creation.
+        doctor (ForeignKey):
+            A reference to the associated doctor, linked to the Profile model in the accounts app.
+        patient (ForeignKey):
+            A reference to the associated patient, linked to the Profile model in the accounts app.
+            This can be null if no patient is associated.
+        female_age (IntegerField):
+            The age of the female patient in years, validated to be between 10 and 99.
+        AMH (DecimalField):
+            Anti-Müllerian hormone level, indicating ovarian reserve.
+        FSH (DecimalField):
+            Follicle-stimulating hormone level, relevant for evaluating ovulatory function.
+        no_embryos (IntegerField):
+            The number of embryos retrieved during the procedure.
+        endoendometrial_tickness (DecimalField):
+            Thickness of the endometrium, important for implantation success.
+        sperm_count (DecimalField):
+            Total sperm count available for fertilization, measured in millions.
+        sperm_morphology (IntegerField):
+            Assessment of sperm morphology as evaluated under a microscope.
+        follicle_size (IntegerField):
+            Average size of ovarian follicles, important for ovulation timing.
+        no_of_retrieved_oocytes (IntegerField):
+            Total number of oocytes retrieved during the egg retrieval process.
+        quality_of_embryo (IntegerField):
+            Quality assessment rating for the retrieved embryos.
+        quality_of_retrieved_oocytes_MI (IntegerField):
+            Quality assessment rating for acquired oocytes at the metaphase I stage.
+        quality_of_retrieved_oocytes_MII (IntegerField):
+            Quality assessment rating for acquired oocytes at the metaphase II stage.
+        result (IntegerField):
+            The final predictive result from the model.
+        created_date (DateTimeField):
+            Timestamp of when the predictor instance was created, auto-filled upon record creation.
 
     Methods:
-    - __str__(): Returns a string representation of the predictor instance, including the patient and results.
-    - get_absolute_api_url(): Returns the API endpoint URL for accessing details of the predictor instance.
+        __str__():
+            Returns a string representation of the predictor instance, including associated doctor and patient details.
+        get_absolute_api_url():
+            Returns the API endpoint URL for accessing details of the predictor instance.
     """
 
     doctor = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)

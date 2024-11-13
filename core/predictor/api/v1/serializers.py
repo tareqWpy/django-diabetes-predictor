@@ -6,10 +6,34 @@ from ...models import DoctorPredictor, Patient, PatientPredictor
 
 
 class ClientPredictorSerializers(serializers.ModelSerializer):
-    """Serializer Class for Predictor model instances.
+    """
+    Serializer for the ClientPredictor model.
 
-    This serializer handles the serialization and deserialization of
-    Predictor model instances, providing additional fields for API URLs.
+    This serializer manages the transformation of ClientPredictor model instances
+    into JSON format and vice versa. It includes fields for client attributes,
+    various health measurements, and endpoints for API access.
+
+    Attributes:
+        relative_url (URLField): A read-only field generating the relative URL
+            for the ClientPredictor instance.
+        absolute_url (SerializerMethodField): A read-only field generating the
+            absolute URL for the ClientPredictor instance.
+
+    Meta:
+        model (PatientPredictor): The model class to be serialized.
+        fields (list): List of fields to be included in the serialized output.
+        read_only_fields (list): Fields that should not be writable by users.
+
+    Methods:
+        get_abs_url(obj): Constructs the absolute URL for the instance.
+        to_representation(obj): Customizes the representation for the serializer,
+            removing URL fields based on the request context.
+        create(validated_data): Handles the creation of a new ClientPredictor
+            instance, validating user authentication and profile existence.
+
+    Raises:
+        serializers.ValidationError: If the user is not authenticated, the profile
+        does not exist, or related client cannot be found.
     """
 
     relative_url = serializers.URLField(source="get_absolute_api_url", read_only=True)
@@ -72,6 +96,35 @@ class ClientPredictorSerializers(serializers.ModelSerializer):
 
 
 class DoctorPredictorSerializers(serializers.ModelSerializer):
+    """
+    Serializer for the DoctorPredictor model.
+
+    This serializer handles the conversion of DoctorPredictor model instances
+    into JSON format and vice versa. It includes fields for doctor and patient
+    details, various medical measurements, and URLs for accessing API endpoints.
+
+    Attributes:
+        relative_url (URLField): A read-only field generating the relative URL
+            for the DoctorPredictor instance.
+        absolute_url (SerializerMethodField): A read-only field generating the
+            absolute URL for the DoctorPredictor instance.
+
+    Meta:
+        model (DoctorPredictor): The model class to be serialized.
+        fields (list): List of fields to be included in the serialized output.
+        read_only_fields (list): Fields that should not be writable by users.
+
+    Methods:
+        get_abs_url(obj): Constructs the absolute URL for the instance.
+        to_representation(obj): Customizes the representation for the serializer,
+            removing URL fields based on the request context.
+        create(validated_data): Handles the creation of a new DoctorPredictor
+            instance, validating user authentication and profile existence.
+
+    Raises:
+        serializers.ValidationError: If the user is not authenticated, profile
+        does not exist, or related patient cannot be found.
+    """
 
     relative_url = serializers.URLField(source="get_absolute_api_url", read_only=True)
     absolute_url = serializers.SerializerMethodField(method_name="get_abs_url")
@@ -135,7 +188,7 @@ class DoctorPredictorSerializers(serializers.ModelSerializer):
 
         if not Patient.objects.filter(id=instance.patient.id, manager=profile).exists():
             raise serializers.ValidationError(
-                "This patient does not exist for this user."
+                "The patient does not exist for this user."
             )
 
         return instance

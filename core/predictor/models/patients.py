@@ -3,7 +3,17 @@ from django.db import models
 
 class Patient(models.Model):
     """
-    This Django model represents a patient created by a doctor.
+    Represents a patient in the system created by a doctor.
+
+    Attributes:
+        manager (ForeignKey): A reference to the Profile of the managing doctor.
+        first_name (CharField): The patient's first name, limited to 255 characters.
+        last_name (CharField): The patient's last name, limited to 255 characters.
+        created_date (DateTimeField): The date and time when the patient record was created, auto-populated on creation.
+        updated_date (DateTimeField): The date and time when the patient record was last updated, auto-populated on each update.
+
+    Methods:
+        __str__(): Returns the patient's full name in the format "First Last".
     """
 
     manager = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)

@@ -5,7 +5,7 @@ from .models import DoctorPredictor, Patient, PatientPredictor
 
 class ClientPredictorAdmin(admin.ModelAdmin):
     """
-    A class for presenting the data in Admin panel.
+    A class for Client to present the data in Admin panel.
     """
 
     list_display = (
@@ -22,7 +22,7 @@ class ClientPredictorAdmin(admin.ModelAdmin):
 
 class DoctorPredictorAdmin(admin.ModelAdmin):
     """
-    A class for presenting the data in Admin panel.
+    A class for Doctor to present the data in Admin panel.
     """
 
     list_display = (
@@ -39,7 +39,7 @@ class DoctorPredictorAdmin(admin.ModelAdmin):
 
 
 """
-Registeration for Admin panel to present data of Taks.
+Registeration classes for Admin panel.
 """
 admin.site.register(Patient)
 admin.site.register(PatientPredictor, ClientPredictorAdmin)
