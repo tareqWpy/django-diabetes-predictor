@@ -19,6 +19,7 @@ class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
         required=True,
     )
 
+    referral_token = serializers.CharField(allow_blank=True, required=False)
     password = serializers.CharField(style={"input_type": "password"}, write_only=True)
 
     default_error_messages = {
@@ -30,6 +31,7 @@ class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
         fields = tuple(User.REQUIRED_FIELDS) + (
             settings.LOGIN_FIELD,
             settings.USER_ID_FIELD,
+            "referral_token",
             "type",
             "password",
         )

@@ -24,9 +24,25 @@ class Command(BaseCommand):
             default=False,
             help="Create superuser",
         )
+        parser.add_argument(
+            "-d",
+            "--doctor",
+            type=bool,
+            default=False,
+            help="Create doctor",
+        )
+        parser.add_argument(
+            "-p",
+            "--patient",
+            type=bool,
+            default=False,
+            help="Create patient",
+        )
 
     def handle(self, *args, **options):
         superuser = options["superuser"]
+        doctor = options["doctor"]
+        patient = options["patient"]
 
         if superuser:
             try:
@@ -44,4 +60,40 @@ class Command(BaseCommand):
                     self.style.WARNING(
                         "Superuser creation failed: Email already exists."
                     )
+                )
+
+        if doctor:
+            try:
+                doctor = User.objects.create_user(
+                    email="doctor1@admin.com",
+                    password="9889taat",
+                    is_superuser=True,
+                    is_staff=True,
+                    is_active=True,
+                )
+                self.stdout.write(
+                    self.style.SUCCESS(f"Doctor created successfully! ID: {doctor.id}")
+                )
+            except IntegrityError:
+                self.stdout.write(
+                    self.style.WARNING("Doctor creation failed: Email already exists.")
+                )
+
+        if patient:
+            try:
+                patient = User.objects.create_user(
+                    email="patient1@admin.com",
+                    password="9889taat",
+                    is_superuser=True,
+                    is_staff=True,
+                    is_active=True,
+                )
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"Patient created successfully! ID: {patient.id}"
+                    )
+                )
+            except IntegrityError:
+                self.stdout.write(
+                    self.style.WARNING("Patient creation failed: Email already exists.")
                 )

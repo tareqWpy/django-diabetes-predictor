@@ -1,8 +1,14 @@
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from djoser.views import UserViewSet
 from rest_framework import generics
+from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 
-from ...models import Profile
+from ...models import Profile, UserType
 from .serializers import ProfileSerializer
+
+User = get_user_model()
 
 
 class ProfileAPIView(generics.RetrieveUpdateAPIView):
@@ -42,3 +48,17 @@ class ProfileAPIView(generics.RetrieveUpdateAPIView):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, user=self.request.user)
         return obj
+
+
+class CustomUserViewSet(UserViewSet):
+
+    @action(["get", "delete"], detail=False)
+    def me(self, request, *args, **kwargs):
+        self.get_object = self.get_instance
+        user = self.get_object()
+
+        if request.method == "GET":
+            return self.retrieve(request, *args, **kwargs)
+
+        elif request.method == "DELETE":
+            return self.destroy(request, *args, **kwargs)
