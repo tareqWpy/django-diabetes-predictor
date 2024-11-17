@@ -20,7 +20,7 @@ class UserManager(BaseUserManager):
     Custom user model manager where email is the unique identifier for authentication instead of username.
     """
 
-    def create_user(self, email, referral_token, password=None, **extra_fields):
+    def create_user(self, email, password=None, referral_token=None, **extra_fields):
         """
         Create and save a User with the given email and password.
         """
@@ -37,19 +37,19 @@ class UserManager(BaseUserManager):
             if usages_token.exists():
                 raise ValueError(_("This referral token has already been used."))
 
-            # Create user
-            user = self.model(email=email, **extra_fields)
+            user = self.model(
+                email=email, referral_token=referral_token, **extra_fields
+            )
             user.set_password(password)
             user.save()
 
-            # Create relationship for inviter and invited person
             ReferralRelation.objects.create(
                 refer_from=ref_code.creator,
                 refer_to=user.user_profile,
                 refer_token=ref_code,
             )
         else:
-            # Create user without referral token
+
             user = self.model(email=email, **extra_fields)
             user.set_password(password)
             user.save()
