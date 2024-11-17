@@ -3,15 +3,15 @@ from django.db import models
 from django.urls import reverse
 
 
-class ClientPredictor(models.Model):
+class Predictor(models.Model):
     """
-    Client Predictor Model
+    patient Predictor Model
 
     This Django model represents predictors for outcomes in assisted reproductive technology.
     It captures essential medical parameters for evaluating fertility potential in individual patients.
 
     Attributes:
-        client (ForeignKey): A reference to the associated patient, linked to the Profile model in the accounts app.
+        patient (ForeignKey): A reference to the associated patient, linked to the Profile model in the accounts app.
         female_age (IntegerField): Age of the female patient in years, validated between 10 and 99.
         AMH (DecimalField): Anti-Müllerian hormone level, a key marker for ovarian reserve.
         FSH (DecimalField): Follicle-stimulating hormone level, indicating ovulatory function.
@@ -32,7 +32,7 @@ class ClientPredictor(models.Model):
         get_absolute_api_url(): Returns the URL for accessing the detail view of the predictor instance via API.
     """
 
-    client = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
+    patient = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
     female_age = models.IntegerField(
         validators=[MinValueValidator(10), MaxValueValidator(99)]
     )
@@ -52,12 +52,10 @@ class ClientPredictor(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Predictor for {self.client} - Result: {self.result}"
+        return f"Predictor for {self.patient} - Result: {self.result}"
 
     def get_absolute_api_url(self):
-        return reverse(
-            "predictor:api-v1:client-predictor-detail", kwargs={"pk": self.pk}
-        )
+        return reverse("predictor:api-v1:predictor-detail", kwargs={"pk": self.pk})
 
     def get_full_name(self):
-        return f"{self.client.first_name} {self.client.last_name}"
+        return f"{self.patient.first_name} {self.patient.last_name}"

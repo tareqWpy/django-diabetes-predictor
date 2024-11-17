@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # ? via manage.py
     "accounts",
     "predictor",
+    "referral",
     # ? via pip
     "rest_framework",
     # commented beacuse the default authentication is based on JWT authentication

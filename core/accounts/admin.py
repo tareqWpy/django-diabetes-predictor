@@ -96,5 +96,5 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Profile)
 class CustomProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "first_name", "last_name", "user_type")
-    searching_fields = ("user", "first_name", "last_name", "phone_number")
+    list_display = ("user", "first_name", "last_name")
+    searching_fields = ("user", "first_name", "last_name")

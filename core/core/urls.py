@@ -55,6 +55,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("predictor/", include("predictor.urls")),
+    path("referral/", include("referral.urls")),
     path("api-auth/", include("rest_framework.urls")),
     path(
         "swagger/output.json",

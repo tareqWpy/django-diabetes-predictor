@@ -8,9 +8,10 @@ from django.utils.translation import gettext_lazy as _
 
 
 class UserType(models.IntegerChoices):
-    client = 1, _("client")
-    doctor = 2, _("doctor")
-    superuser = 3, _("superuser")
+    admin = 1, _("admin")
+    patient = 2, _("patient")
+    doctor = 3, _("doctor")
+    superuser = 4, _("superuser")
 
 
 class UserManager(BaseUserManager):
@@ -56,7 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
-    type = models.IntegerField(choices=UserType.choices, default=UserType.client.value)
+    type = models.IntegerField(choices=UserType.choices, default=UserType.patient.value)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

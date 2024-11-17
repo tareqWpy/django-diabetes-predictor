@@ -1,5 +1,6 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from djoser.conf import settings
 from djoser.serializers import UserCreateMixin
@@ -12,7 +13,7 @@ from ...models import Profile, User, UserType
 class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
     type = serializers.ChoiceField(
         choices=[
-            (UserType.client.value, UserType.client.label),
+            (UserType.patient.value, UserType.patient.label),
             (UserType.doctor.value, UserType.doctor.label),
         ],
         required=True,
@@ -34,9 +35,9 @@ class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
         )
 
     def validate_type(self, value):
-        if value not in [UserType.client.value, UserType.doctor.value]:
+        if value not in [UserType.patient.value, UserType.doctor.value]:
             raise serializers.ValidationError(
-                _("Invalid user type. Please select either 'client' or 'doctor'."),
+                _("Invalid user type. Please select either 'patient' or 'doctor'."),
             )
         return value
 
@@ -78,15 +79,7 @@ class UserCreatePasswordRetypeSerializer(RegistrationSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source="user.email", read_only=True)
-    user_type = serializers.CharField(source="user.type", read_only=True)
 
     class Meta:
         model = Profile
-        fields = [
-            "id",
-            "email",
-            "first_name",
-            "last_name",
-            "image",
-            "user_type",
-        ]
+        fields = ["id", "email", "first_name", "last_name", "image"]
