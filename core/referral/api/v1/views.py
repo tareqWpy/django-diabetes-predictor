@@ -6,39 +6,37 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 
-from ...models import Referral
+from ...models import ReferralCode
 from .paginations import DefaultPagination
 from .permissions import IsAuthenticatedAndActive
-from .serializers import ReferralSerializer
+from .serializers import ReferralCodeSerializer
 
 
 class ReferralViewset(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
-    mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
-    serializer_class = ReferralSerializer
+    serializer_class = ReferralCodeSerializer
     permission_classes = [IsAuthenticatedAndActive]
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = {
-        "refer_to": ["exact"],
-        "refer_token": ["exact"],
+        "token": ["exact"],
+        "creator": ["exact"],
         "created_date": ["gte", "lte"],
     }
-    search_fields = ["refer_token"]
+    search_fields = ["token"]
     ordering_fields = ["created_date"]
     pagination_class = DefaultPagination
-    lookup_field = "refer_token"
+    lookup_field = "token"
 
     def get_queryset(self):
         user = self.request.user
         profile = get_object_or_404(Profile, user=user)
 
         if profile.user.type in [UserType.doctor.value, UserType.superuser.value]:
-            return Referral.objects.filter(refer_from=profile)
+            return ReferralCode.objects.filter(creator=profile)
         else:
             raise PermissionDenied(
                 {"details": "Access denied: you must be a doctor to use this feature."}

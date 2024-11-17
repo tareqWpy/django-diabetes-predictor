@@ -1,10 +1,11 @@
 import secrets
 
-from ..models import Referral
+from ..models import ReferralCode
 
 
 def generate_unique_refer_token():
     while True:
         token = secrets.token_urlsafe(32)
-        if not Referral.objects.filter(refer_token=token).exists():
+        token = token[:32]
+        if not ReferralCode.objects.filter(token=token).exists():
             return token
