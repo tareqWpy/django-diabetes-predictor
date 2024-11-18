@@ -3,7 +3,7 @@ from django.core import exceptions as django_exceptions
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from djoser.conf import settings
-from djoser.serializers import UserCreateMixin
+from djoser.serializers import PasswordRetypeSerializer, UserCreateMixin
 from rest_framework import serializers
 from rest_framework.settings import api_settings
 
@@ -85,3 +85,19 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ["id", "email", "first_name", "last_name", "image"]
+
+
+class AccountDeleteSerializer(serializers.ModelSerializer):
+    current_password = serializers.CharField(
+        style={"input_type": "password"}, required=True
+    )
+
+    def validate_current_password(self, value):
+        user = self.context["request"].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Current password is incorrect.")
+        return value
+
+    class Meta:
+        model = User
+        fields = ["current_password"]

@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     # ? via pip
     "rest_framework",
     # commented beacuse the default authentication is based on JWT authentication
-    # "rest_framework.authtoken",
+    "rest_framework.authtoken",
     "django_filters",
     "drf_yasg",
     "rest_framework_simplejwt",
@@ -170,7 +170,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
         # commented beacuse the default authentication is based on JWT authentication
-        # "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ]
 }
@@ -195,11 +195,9 @@ PASSWORD_RESET_TIMEOUT = config("PASSWORD_RESET_TIMEOUT", cast=int, default=120)
 # djoser configuration
 DJOSER = {
     "LOGIN_FIELD": "email",
-    "USER_CREATE_PASSWORD_RETYPE": True,
-    "USERNAME_CHANGED_EMAIL_CONFIRMATION": True,
-    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
+    # "USERNAME_CHANGED_EMAIL_CONFIRMATION": True,
+    # "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
     "SEND_CONFIRMATION_EMAIL": True,
-    "SET_USERNAME_RETYPE": True,
     "SET_PASSWORD_RETYPE": True,
     "USERNAME_RESET_CONFIRM_URL": "password/reset/comfirm/{uid}/{token}",
     "PASSWORD_RESET_CONFIRM_URL": "email/reset/comfirm/{uid}/{token}",
