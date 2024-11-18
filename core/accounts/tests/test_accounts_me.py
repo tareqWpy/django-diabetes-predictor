@@ -45,9 +45,9 @@ class TestAccountsMeAPI:
 
         api_client.force_authenticate(user=user)
         response = api_client.delete(url)
-        print(response.status_code)
-        print(response.content)
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert (
+            response.status_code == status.HTTP_400_BAD_REQUEST
+        ), '{"current_password": ["This field is required."]}'
 
     def test_delete_account_response_204_status(
         self, api_client, user_doctor_activated
