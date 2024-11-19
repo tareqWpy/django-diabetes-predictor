@@ -8,6 +8,31 @@ from ...models import ReferralRelationship, ReferralToken
 from ..utils import generate_unique_refer_token
 
 
+class ReferralTokenInstanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReferralToken
+        fields = [
+            "id",
+            "creator",
+            "token",
+            "created_date",
+        ]
+        read_only_fields = ["creator", "token", "created_date"]
+
+
+class ReferralProfileInstanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = [
+            "id",
+            "user",
+            "first_name",
+            "last_name",
+            "created_date",
+        ]
+        read_only_fields = ["user", "created_date"]
+
+
 class ReferralTokenSerializer(serializers.ModelSerializer):
     creator = ProfileSerializer(read_only=True)
 
@@ -46,8 +71,10 @@ class ReferralTokenSerializer(serializers.ModelSerializer):
 
 
 class ReferralRelationshipSerializer(serializers.ModelSerializer):
-    manager = ReferralTokenSerializer()
+    refer_from = ReferralProfileInstanceSerializer(read_only=True)
+    refer_token = ReferralTokenInstanceSerializer(read_only=True)
+    refer_to = ReferralProfileInstanceSerializer(read_only=True)
 
     class Meta:
         model = ReferralRelationship
-        fields = ["id", "manager", "refer_from", "refer_to", "refer_token"]
+        fields = ["id", "refer_from", "refer_to", "refer_token"]

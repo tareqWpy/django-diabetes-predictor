@@ -21,13 +21,5 @@ class ReferralRelationship(models.Model):
     )
     created_date = models.DateTimeField(auto_now_add=True)
 
-    @property
-    def show_first_name(self):
-        return self.refer_to.first_name if self.refer_to else None
-
-    @property
-    def show_last_name(self):
-        return self.refer_to.last_name if self.refer_to else None
-
     def __str__(self):
         return f"Referral from {self.refer_from} to {self.refer_to} with token {self.refer_token}"
