@@ -1,13 +1,15 @@
+from accounts.api.v1.serializers import ProfileSerializer
 from accounts.models import Profile, UserType
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from ...models import ReferralToken
+from ...models import ReferralRelationship, ReferralToken
 from ..utils import generate_unique_refer_token
 
 
 class ReferralTokenSerializer(serializers.ModelSerializer):
+    creator = ProfileSerializer(read_only=True)
 
     class Meta:
         model = ReferralToken
@@ -41,3 +43,11 @@ class ReferralTokenSerializer(serializers.ModelSerializer):
         validated_data["creator"] = profile
         validated_data["token"] = generate_unique_refer_token()
         return super().create(validated_data)
+
+
+class ReferralRelationshipSerializer(serializers.ModelSerializer):
+    manager = ReferralTokenSerializer()
+
+    class Meta:
+        model = ReferralRelationship
+        fields = ["id", "manager", "refer_from", "refer_to", "refer_token"]

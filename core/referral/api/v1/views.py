@@ -6,10 +6,10 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 
-from ...models import ReferralToken
+from ...models import ReferralRelationship, ReferralToken
 from .paginations import DefaultPagination
 from .permissions import IsAuthenticatedAndActive
-from .serializers import ReferralTokenSerializer
+from .serializers import ReferralRelationshipSerializer, ReferralTokenSerializer
 
 
 class ReferralViewset(
@@ -41,3 +41,24 @@ class ReferralViewset(
             raise PermissionDenied(
                 {"details": "Access denied: you must be a doctor to use this feature."}
             )
+
+
+class ReferralRelationshipAPIView(generics.RetrieveAPIView):
+    serializer_class = ReferralRelationshipSerializer
+    permission_classes = [IsAuthenticatedAndActive]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = {
+        "refer_from": ["exact"],
+        "refer_to": ["exact"],
+        "refer_token": ["exact"],
+        "created_date": ["gte", "lte"],
+    }
+    search_fields = ["refer_token"]
+    ordering_fields = ["created_date"]
+    pagination_class = DefaultPagination
+    queryset = ReferralRelationship.objects.all()
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = get_object_or_404(queryset, id=self.request.user.id)
+        return obj

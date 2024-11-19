@@ -88,12 +88,11 @@ class UserCreatePasswordRetypeSerializer(RegistrationSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    email = serializers.CharField(source="user.email", read_only=True)
     user = RegistrationSerializer()
 
     class Meta:
         model = Profile
-        fields = ["id", "user", "email", "first_name", "last_name", "image"]
+        fields = ["id", "user", "first_name", "last_name", "image"]
 
 
 class AccountDeleteSerializer(serializers.ModelSerializer):

@@ -27,7 +27,10 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError(_("Email must be set."))
         email = self.normalize_email(email)
-        if extra_fields.get("type") == UserType.doctor.value:
+        if (
+            extra_fields.get("type") == UserType.doctor.value
+            and referral_token is not None
+        ):
             raise ValueError(_("Doctor type can not have referral token."))
 
         first_name = extra_fields.pop("first_name", None)

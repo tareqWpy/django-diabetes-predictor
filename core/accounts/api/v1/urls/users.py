@@ -13,5 +13,7 @@ urlpatterns = router.urls
 
 
 urlpatterns += [
-    path("delete_account", views.AccountDeleteAPIView.as_view(), name="delete-account"),
+    path(
+        "delete_account/", views.AccountDeleteAPIView.as_view(), name="delete-account"
+    ),
 ]
