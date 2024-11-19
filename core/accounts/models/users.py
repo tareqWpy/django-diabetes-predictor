@@ -5,7 +5,7 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from referral.models import ReferralCode, ReferralRelation
+from referral.models import ReferralRelationship, ReferralToken
 
 
 class UserType(models.IntegerChoices):
@@ -27,29 +27,47 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError(_("Email must be set."))
         email = self.normalize_email(email)
+        if extra_fields.get("type") == UserType.doctor.value:
+            raise ValueError(_("Doctor type can not have referral token."))
 
-        if referral_token:
-            ref_code = ReferralCode.objects.filter(token=referral_token).first()
-            if not ref_code:
-                raise ValueError(_("Your token is not valid."))
+        first_name = extra_fields.pop("first_name", None)
+        last_name = extra_fields.pop("last_name", None)
 
-            usages_token = ReferralRelation.objects.filter(refer_token=ref_code)
-            if usages_token.exists():
-                raise ValueError(_("This referral token has already been used."))
+        if (
+            extra_fields.get("type") == UserType.patient.value
+        ):  # only patient can have referral_token and set first_name and last_name in create_user function
+            if referral_token:
+                ref_code = ReferralToken.objects.filter(token=referral_token).first()
+                if not ref_code:
+                    raise ValueError(_("Your token is not valid."))
 
-            user = self.model(
-                email=email, referral_token=referral_token, **extra_fields
-            )
-            user.set_password(password)
-            user.save()
+                usages_token = ReferralRelationship.objects.filter(refer_token=ref_code)
+                if usages_token.exists():
+                    raise ValueError(_("This referral token has already been used."))
 
-            ReferralRelation.objects.create(
-                refer_from=ref_code.creator,
-                refer_to=user.user_profile,
-                refer_token=ref_code,
-            )
+                user = self.model(
+                    email=email, referral_token=referral_token, **extra_fields
+                )
+                user.set_password(password)
+                user.save()
+                user_profile = user.user_profile
+
+                if first_name and last_name:
+                    user_profile.first_name = first_name
+                    user_profile.last_name = last_name
+                    user_profile.save()
+
+                ReferralRelationship.objects.create(
+                    refer_from=ref_code.creator,
+                    refer_to=user_profile,
+                    refer_token=ref_code,
+                )
+            else:
+
+                user = self.model(email=email, **extra_fields)
+                user.set_password(password)
+                user.save()
         else:
-
             user = self.model(email=email, **extra_fields)
             user.set_password(password)
             user.save()
@@ -95,3 +113,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    @property
+    def user_type(self):
+        return UserType(self.type).label

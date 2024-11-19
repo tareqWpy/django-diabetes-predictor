@@ -1,3 +1,5 @@
+from unittest.util import _MAX_LENGTH
+
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
 from django.urls import reverse
@@ -18,8 +20,11 @@ class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
         ],
         required=True,
     )
-
-    referral_token = serializers.CharField(allow_blank=True, required=False)
+    first_name = serializers.CharField(max_length=255, allow_blank=True, required=False)
+    last_name = serializers.CharField(max_length=255, allow_blank=True, required=False)
+    referral_token = serializers.CharField(
+        max_length=32, allow_blank=True, required=False
+    )
     password = serializers.CharField(style={"input_type": "password"}, write_only=True)
 
     default_error_messages = {
@@ -32,6 +37,8 @@ class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
             settings.LOGIN_FIELD,
             settings.USER_ID_FIELD,
             "referral_token",
+            "first_name",
+            "last_name",
             "type",
             "password",
         )
@@ -44,10 +51,11 @@ class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
-        user = User(**attrs)
         password = attrs.get("password")
-
         try:
+            user = User(
+                **{key: attrs[key] for key in User.REQUIRED_FIELDS if key in attrs}
+            )
             validate_password(password, user)
         except django_exceptions.ValidationError as e:
             serializer_error = serializers.as_serializer_error(e)
@@ -81,10 +89,11 @@ class UserCreatePasswordRetypeSerializer(RegistrationSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source="user.email", read_only=True)
+    user = RegistrationSerializer()
 
     class Meta:
         model = Profile
-        fields = ["id", "email", "first_name", "last_name", "image"]
+        fields = ["id", "user", "email", "first_name", "last_name", "image"]
 
 
 class AccountDeleteSerializer(serializers.ModelSerializer):
