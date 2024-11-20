@@ -7,6 +7,7 @@ from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 
 from ...models import ReferralRelationship, ReferralToken
+from .filters import ReferralRelationshipFilter, ReferralTokenFilter
 from .paginations import DefaultPagination
 from .permissions import IsAuthenticatedAndActive, IsDoctor
 from .serializers import ReferralRelationshipSerializer, ReferralTokenSerializer
@@ -22,11 +23,7 @@ class ReferralTokenViewset(
     serializer_class = ReferralTokenSerializer
     permission_classes = [IsAuthenticatedAndActive, IsDoctor]
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = {
-        "token": ["exact"],
-        "creator": ["exact"],
-        "created_date": ["gte", "lte"],
-    }
+    filterset_class = ReferralTokenFilter
     search_fields = ["token"]
     ordering_fields = ["created_date"]
     pagination_class = DefaultPagination
@@ -52,13 +49,8 @@ class ReferralRelationshipViewset(
     serializer_class = ReferralRelationshipSerializer
     permission_classes = [IsAuthenticatedAndActive, IsDoctor]
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = {
-        "refer_from": ["exact"],
-        "refer_to": ["exact"],
-        "refer_token": ["exact"],
-        "created_date": ["gte", "lte"],
-    }
-    search_fields = ["refer_token"]
+    filterset_class = ReferralRelationshipFilter
+    search_fields = ["refer_token__token"]
     ordering_fields = ["created_date"]
     pagination_class = DefaultPagination
     lookup_field = "refer_token"

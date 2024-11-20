@@ -13,7 +13,7 @@ from rest_framework.response import Response
 
 from ...models import Predictor
 from .paginations import DefaultPagination
-from .permissions import IsAuthenticatedAndActive
+from .permissions import IsAuthenticatedAndActive, IsPatient
 from .serializers import PredictorSerializers
 
 # Set the SERVICES_DIR path to the "services" directory,
@@ -67,7 +67,7 @@ class PredictorViewSet(
             to access predictions.
     """
 
-    permission_classes = [IsAuthenticatedAndActive]
+    permission_classes = [IsAuthenticatedAndActive, IsPatient]
     serializer_class = PredictorSerializers
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = {
