@@ -37,7 +37,7 @@ def user_doctor_inactive():
         email="doctor1@admin.com",
         password="9889taat",
         type=UserType.doctor.value,
-        is_active=True,
+        is_active=False,
     )
     return user
 
@@ -65,7 +65,7 @@ def user_patient_inactive():
         email="patient1@admin.com",
         password="9889taat",
         type=UserType.patient.value,
-        is_active=True,
+        is_active=False,
     )
     return user
 
@@ -73,18 +73,82 @@ def user_patient_inactive():
 @pytest.mark.django_db
 class TestAccountsMeAPI:
     """
-    Test suite for 'GET' and 'DELETE' API endpoints related to 'me'.
+    Test suite for referral app endpoints.
     """
 
-    def test_post_referral_token_empty_input_200_status(self, api_client, user_doctor_active):
-        """
-        Test DELETE request to 'me' endpoint returns 400 status code.
-        """
-        url = reverse("referral:api-v1:referral")
+    def test_doctor_active_get_referral_token_list_200_status(
+        self, api_client, user_doctor_active
+    ):
+        url = reverse("referral:api-v1:referral-list")
         user = user_doctor_active
-
         api_client.force_authenticate(user=user)
-        response = api_client.delete(url)
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_patien_active_get_referral_token_list_403_status(
+        self, api_client, user_patient_active
+    ):
+        url = reverse("referral:api-v1:referral-list")
+        user = user_patient_active
+        api_client.force_authenticate(user=user)
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_doctor_active_post_referral_token_list_without_credentials_201_status(
+        self, api_client, user_doctor_active
+    ):
+        url = reverse("referral:api-v1:referral-list")
+        user = user_doctor_active
+        api_client.force_authenticate(user=user)
+        response = api_client.post(url)
+        assert response.status_code == status.HTTP_201_CREATED
+        assert "token" in response.data
+        assert "creator" in response.data
+        assert response.data["first_name"] == None
+        assert "last_name" in response.data
+        assert response.data["last_name"] == None
+
+    def test_doctor_active_post_referral_token_list_with_credentials_201_status(
+        self, api_client, user_doctor_active
+    ):
+        url = reverse("referral:api-v1:referral-list")
+        user = user_doctor_active
+        api_client.force_authenticate(user=user)
+        response = api_client.post(url, data={"first_name": "John", "last_name": "Doe"})
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert "token" in response.data
+        assert "creator" in response.data
+        assert "first_name" in response.data
+        assert response.data["first_name"] == "John"
+        assert "last_name" in response.data
+        assert response.data["last_name"] == "Doe"
+
+    def test_patient_active_post_referral_token_list_403_status(
+        self, api_client, user_patient_active
+    ):
+        url = reverse("referral:api-v1:referral-list")
+        user = user_patient_active
+        api_client.force_authenticate(user=user)
+        response = api_client.post(url)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_doctor_inactive_get_referral_token_list_403_status(
+        self, api_client, user_doctor_inactive
+    ):
+        url = reverse("referral:api-v1:referral-list")
+        user = user_doctor_inactive
+        api_client.force_authenticate(user=user)
+        response = api_client.get(url)
         assert (
-            response.status_code == status.HTTP_400_BAD_REQUEST
-        ), '{"current_password": ["This field is required."]}'
+            response.status_code == status.HTTP_403_FORBIDDEN
+        ), '{"detail": "Authentication credentials were not provided."}'
+
+    def test_patient_inactive_post_referral_token_list_403_status(
+        self, api_client, user_patient_inactive
+    ):
+        url = reverse("referral:api-v1:referral-list")
+        user = user_patient_inactive
+        api_client.force_authenticate(user=user)
+        response = api_client.post(url)
+        assert response.status_code == status.HTTP_403_FORBIDDEN

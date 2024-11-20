@@ -35,7 +35,9 @@ class ReferralTokenViewset(
         profile = get_object_or_404(Profile, user=user)
 
         if profile.user.type in [UserType.doctor.value, UserType.superuser.value]:
-            return ReferralToken.objects.filter(creator=profile)
+            return ReferralToken.objects.filter(creator=profile).order_by(
+                "created_date"
+            )
         else:
             raise PermissionDenied(
                 {"details": "Access denied: you must be a doctor to use this feature."}
@@ -51,7 +53,9 @@ class AnonReferralTokenViewset(
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return ReferralToken.objects.filter(token=self.kwargs[self.lookup_field])
+        return ReferralToken.objects.filter(
+            token=self.kwargs[self.lookup_field]
+        ).order_by("created_date")
 
 
 class ReferralRelationshipViewset(
@@ -76,7 +80,7 @@ class ReferralRelationshipViewset(
             try:
                 return ReferralRelationship.objects.get(
                     refer_from=profile, refer_token=self.kwargs[self.lookup_field]
-                )
+                ).order_by("created_date")
             except ReferralRelationship.DoesNotExist:
                 raise NotFound("Referral relationship not found.")
         else:
@@ -89,7 +93,9 @@ class ReferralRelationshipViewset(
         profile = Profile.objects.filter(user=user).first()
 
         if profile.user.type in [UserType.doctor.value, UserType.superuser.value]:
-            return ReferralRelationship.objects.filter(refer_from=profile)
+            return ReferralRelationship.objects.filter(refer_from=profile).order_by(
+                "created_date"
+            )
         else:
             raise PermissionDenied(
                 {"details": "Access denied: you must be a doctor to use this feature."}
