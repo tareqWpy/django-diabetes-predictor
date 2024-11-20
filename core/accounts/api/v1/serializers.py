@@ -12,13 +12,26 @@ from rest_framework.settings import api_settings
 from ...models import Profile, User, UserType
 
 
+class UserInstanceSerializer(serializers.ModelSerializer):
+    user_type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ("id", "email", "user_type")
+
+    def get_user_type(self, obj):
+        return UserType(obj.type).label
+
+
 class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
+    user_type = serializers.SerializerMethodField()
     type = serializers.ChoiceField(
         choices=[
             (UserType.patient.value, UserType.patient.label),
             (UserType.doctor.value, UserType.doctor.label),
         ],
         required=True,
+        write_only=True,
     )
     first_name = serializers.CharField(max_length=255, allow_blank=True, required=False)
     last_name = serializers.CharField(max_length=255, allow_blank=True, required=False)
@@ -40,8 +53,12 @@ class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
             "first_name",
             "last_name",
             "type",
+            "user_type",
             "password",
         )
+
+    def get_user_type(self, obj):
+        return UserType(obj.type).label
 
     def validate_type(self, value):
         if value not in [UserType.patient.value, UserType.doctor.value]:
@@ -88,7 +105,9 @@ class UserCreatePasswordRetypeSerializer(RegistrationSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = RegistrationSerializer()
+    user = UserInstanceSerializer(read_only=True)
+    first_name = serializers.CharField(max_length=255, allow_blank=True, required=False)
+    last_name = serializers.CharField(max_length=255, allow_blank=True, required=False)
 
     class Meta:
         model = Profile

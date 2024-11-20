@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from ...models import ReferralRelationship, ReferralToken
 from .paginations import DefaultPagination
-from .permissions import IsAuthenticatedAndActive
+from .permissions import IsAuthenticatedAndActive, IsDoctor
 from .serializers import ReferralRelationshipSerializer, ReferralTokenSerializer
 
 
@@ -20,7 +20,7 @@ class ReferralTokenViewset(
     viewsets.GenericViewSet,
 ):
     serializer_class = ReferralTokenSerializer
-    permission_classes = [IsAuthenticatedAndActive]
+    permission_classes = [IsAuthenticatedAndActive, IsDoctor]
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = {
         "token": ["exact"],
@@ -50,7 +50,7 @@ class ReferralRelationshipViewset(
     viewsets.GenericViewSet,
 ):
     serializer_class = ReferralRelationshipSerializer
-    permission_classes = [IsAuthenticatedAndActive]
+    permission_classes = [IsAuthenticatedAndActive, IsDoctor]
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = {
         "refer_from": ["exact"],

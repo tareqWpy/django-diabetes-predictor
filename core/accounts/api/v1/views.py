@@ -5,14 +5,38 @@ from rest_framework import generics, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from ...models import Profile, User
+from ...models import Profile, User, UserType
 from .serializers import AccountDeleteSerializer, ProfileSerializer
 
 
 class ProfileAPIView(generics.RetrieveUpdateAPIView):
-
+    permission_classes = [IsAuthenticatedAndActive]
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
+
+    def check_permissions(self, request):
+        user = request.user
+        if user.type == UserType.patient.value and (
+            "first_name" in request.data or "last_name" in request.data
+        ):
+            return False
+        return True
+
+    def put(self, request, *args, **kwargs):
+        if not self.check_permissions(request):
+            return Response(
+                {"details": "You are not allowed to update your profile"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        if not self.check_permissions(request):
+            return Response(
+                {"details": "You are not allowed to update your profile"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        return self.partial_update(request, *args, **kwargs)
 
     def get_object(self):
         queryset = self.get_queryset()

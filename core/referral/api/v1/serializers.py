@@ -1,4 +1,4 @@
-from accounts.api.v1.serializers import ProfileSerializer
+from accounts.api.v1.serializers import ProfileSerializer, UserInstanceSerializer
 from accounts.models import Profile, UserType
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
@@ -8,19 +8,9 @@ from ...models import ReferralRelationship, ReferralToken
 from ..utils import generate_unique_refer_token
 
 
-class ReferralTokenInstanceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ReferralToken
-        fields = [
-            "id",
-            "creator",
-            "token",
-            "created_date",
-        ]
-        read_only_fields = ["creator", "token", "created_date"]
-
-
 class ReferralProfileInstanceSerializer(serializers.ModelSerializer):
+    user = UserInstanceSerializer()
+
     class Meta:
         model = Profile
         fields = [
@@ -33,8 +23,22 @@ class ReferralProfileInstanceSerializer(serializers.ModelSerializer):
         read_only_fields = ["user", "created_date"]
 
 
+class ReferralTokenInstanceSerializer(serializers.ModelSerializer):
+    creator = ReferralProfileInstanceSerializer()
+
+    class Meta:
+        model = ReferralToken
+        fields = [
+            "id",
+            "creator",
+            "token",
+            "created_date",
+        ]
+        read_only_fields = ["creator", "token", "created_date"]
+
+
 class ReferralTokenSerializer(serializers.ModelSerializer):
-    creator = ProfileSerializer(read_only=True)
+    creator = ReferralProfileInstanceSerializer(read_only=True)
 
     class Meta:
         model = ReferralToken
@@ -72,8 +76,8 @@ class ReferralTokenSerializer(serializers.ModelSerializer):
 
 class ReferralRelationshipSerializer(serializers.ModelSerializer):
     refer_from = ReferralProfileInstanceSerializer(read_only=True)
-    refer_token = ReferralTokenInstanceSerializer(read_only=True)
     refer_to = ReferralProfileInstanceSerializer(read_only=True)
+    refer_token = ReferralTokenInstanceSerializer(read_only=True)
 
     class Meta:
         model = ReferralRelationship
