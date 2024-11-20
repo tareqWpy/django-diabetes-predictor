@@ -4,6 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from ...models import ReferralRelationship, ReferralToken
@@ -39,6 +40,18 @@ class ReferralTokenViewset(
             raise PermissionDenied(
                 {"details": "Access denied: you must be a doctor to use this feature."}
             )
+
+
+class AnonReferralTokenViewset(
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = ReferralTokenSerializer
+    lookup_field = "token"
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return ReferralToken.objects.filter(token=self.kwargs[self.lookup_field])
 
 
 class ReferralRelationshipViewset(

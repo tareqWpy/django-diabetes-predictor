@@ -1,5 +1,3 @@
-from unittest.util import _MAX_LENGTH
-
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
 from django.urls import reverse
@@ -13,7 +11,7 @@ from ...models import Profile, User, UserType
 
 
 class UserInstanceSerializer(serializers.ModelSerializer):
-    user_type = serializers.SerializerMethodField()
+    user_type = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
@@ -24,7 +22,7 @@ class UserInstanceSerializer(serializers.ModelSerializer):
 
 
 class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
-    user_type = serializers.SerializerMethodField()
+    user_type = serializers.SerializerMethodField(read_only=True)
     type = serializers.ChoiceField(
         choices=[
             (UserType.patient.value, UserType.patient.label),
@@ -112,6 +110,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ["id", "user", "first_name", "last_name", "image"]
+        read_only_fields = ["user", "created_date"]
+
+    def validate(self, attrs):
+        if "user" in attrs:
+            raise serializers.ValidationError("You cannot update the user field.")
+        return attrs
 
 
 class AccountDeleteSerializer(serializers.ModelSerializer):
