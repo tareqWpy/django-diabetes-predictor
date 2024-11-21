@@ -28,6 +28,7 @@ class ReferralTokenViewset(
     search_fields = ["token"]
     ordering_fields = ["created_date"]
     pagination_class = DefaultPagination
+    ordering_fields = ["created_date"]
     lookup_field = "token"
 
     def get_queryset(self):
@@ -53,9 +54,7 @@ class AnonReferralTokenViewset(
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return ReferralToken.objects.filter(
-            token=self.kwargs[self.lookup_field]
-        ).order_by("created_date")
+        return ReferralToken.objects.filter(token=self.kwargs[self.lookup_field])
 
 
 class ReferralRelationshipViewset(
@@ -70,11 +69,12 @@ class ReferralRelationshipViewset(
     search_fields = ["refer_token__token"]
     ordering_fields = ["created_date"]
     pagination_class = DefaultPagination
+    ordering_fields = ["created_date"]
     lookup_field = "refer_token"
 
     def get_object(self):
         user = self.request.user
-        profile = Profile.objects.filter(user=user).first()
+        profile = get_object_or_404(Profile, user=user)
 
         if profile.user.type in [UserType.doctor.value, UserType.superuser.value]:
             try:
@@ -90,7 +90,7 @@ class ReferralRelationshipViewset(
 
     def get_queryset(self):
         user = self.request.user
-        profile = Profile.objects.filter(user=user).first()
+        profile = get_object_or_404(Profile, user=user)
 
         if profile.user.type in [UserType.doctor.value, UserType.superuser.value]:
             return ReferralRelationship.objects.filter(refer_from=profile).order_by(

@@ -1,9 +1,8 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from djoser.conf import settings
-from djoser.serializers import PasswordRetypeSerializer, UserCreateMixin
+from djoser.serializers import UserCreateMixin
 from rest_framework import serializers
 from rest_framework.settings import api_settings
 
@@ -18,6 +17,11 @@ class UserInstanceSerializer(serializers.ModelSerializer):
         fields = ("id", "email", "user_type")
 
     def get_user_type(self, obj):
+        user = self.context["request"].user
+        if not user.is_authenticated:
+            raise serializers.ValidationError(
+                "You need to be logged in to update your profile."
+            )
         return UserType(obj.type).label
 
 
@@ -113,8 +117,24 @@ class ProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ["user", "created_date"]
 
     def validate(self, attrs):
+        user = self.context["request"].user
+        data = self.context["request"].data
+
         if "user" in attrs:
             raise serializers.ValidationError("You cannot update the user field.")
+
+        if not user.is_authenticated:
+            raise serializers.ValidationError(
+                "You need to be logged in to update your profile."
+            )
+
+        if user.type == UserType.patient.value and (
+            "first_name" in data or "last_name" in data
+        ):
+            raise serializers.ValidationError(
+                "You are not allowed to update your profile."
+            )
+
         return attrs
 
 
