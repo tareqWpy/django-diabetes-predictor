@@ -4,7 +4,7 @@ from rest_framework import generics, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from ...models import Profile, User, UserType
+from ...models import Profile, User
 from .permissions import IsAuthenticatedAndActive
 from .serializers import AccountDeleteSerializer, ProfileSerializer
 
