@@ -77,7 +77,7 @@ class ReferralRelationshipViewset(
             try:
                 return ReferralRelationship.objects.get(
                     refer_from=profile, refer_token=self.kwargs[self.lookup_field]
-                ).order_by("created_date")
+                )
             except ReferralRelationship.DoesNotExist:
                 raise NotFound("Referral relationship not found.")
         else:
@@ -90,9 +90,7 @@ class ReferralRelationshipViewset(
         profile = get_object_or_404(Profile, user=user)
 
         if profile.user.type in [UserType.doctor.value, UserType.superuser.value]:
-            return ReferralRelationship.objects.filter(refer_from=profile).order_by(
-                "created_date"
-            )
+            return ReferralRelationship.objects.filter(refer_from=profile)
         else:
             raise PermissionDenied(
                 {"details": "Access denied: you must be a doctor to use this feature."}
