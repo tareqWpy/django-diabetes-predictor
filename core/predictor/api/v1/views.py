@@ -4,6 +4,7 @@ from pathlib import Path
 import joblib
 import sklearn
 from accounts.models import Profile, UserType
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status, viewsets
@@ -18,9 +19,6 @@ from .serializers import PredictorSerializers
 
 # Set the SERVICES_DIR path to the "services" directory,
 # which is located two levels up from the current directory.
-SERVICES_DIR = Path(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "services")
-)
 
 
 class PredictorViewSet(
@@ -101,7 +99,7 @@ class PredictorViewSet(
         )
 
     def preprocess_data(self, data):
-        scaler_file_path = SERVICES_DIR.joinpath("scaler.pkl")
+        scaler_file_path = settings.SERVICES_DIR.joinpath("scaler.pkl")
         scaler = joblib.load(scaler_file_path)
         features = [
             data["female_age"],
@@ -121,7 +119,7 @@ class PredictorViewSet(
         return scaler.transform([features])
 
     def get_prediction(self, data):
-        model_file_path = SERVICES_DIR.joinpath("Stacking_clf.pkl")
+        model_file_path = settings.SERVICES_DIR.joinpath("Stacking_clf.pkl")
         model = joblib.load(model_file_path)
         result = model.predict(data)
 
