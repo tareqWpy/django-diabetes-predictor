@@ -35,8 +35,6 @@ class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
         required=True,
         write_only=True,
     )
-    first_name = serializers.CharField(max_length=255, allow_blank=True, required=False)
-    last_name = serializers.CharField(max_length=255, allow_blank=True, required=False)
     referral_token = serializers.CharField(
         max_length=32, allow_blank=True, required=False
     )
@@ -52,8 +50,6 @@ class RegistrationSerializer(UserCreateMixin, serializers.ModelSerializer):
             settings.LOGIN_FIELD,
             settings.USER_ID_FIELD,
             "referral_token",
-            "first_name",
-            "last_name",
             "type",
             "user_type",
             "password",

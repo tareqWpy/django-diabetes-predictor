@@ -33,9 +33,6 @@ class UserManager(BaseUserManager):
         ):
             raise ValueError(_("Doctor type can not have referral token."))
 
-        first_name = extra_fields.pop("first_name", None)
-        last_name = extra_fields.pop("last_name", None)
-
         if (
             extra_fields.get("type") == UserType.patient.value
         ):  # only patient can have referral_token and set first_name and last_name in create_user function
@@ -47,6 +44,9 @@ class UserManager(BaseUserManager):
                 usages_token = ReferralRelationship.objects.filter(refer_token=ref_code)
                 if usages_token.exists():
                     raise ValueError(_("This referral token has already been used."))
+
+                first_name = ref_code.first_name
+                last_name = ref_code.last_name
 
                 user = self.model(
                     email=email, referral_token=referral_token, **extra_fields
