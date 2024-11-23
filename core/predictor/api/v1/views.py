@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status, viewsets
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 
 from ...models import Predictor
@@ -69,7 +69,8 @@ class PredictorViewSet(
 
     permission_classes = [IsAuthenticatedAndActive, IsPatient]
     serializer_class = PredictorSerializers
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    pagination_class = DefaultPagination
     filterset_fields = {
         "result": ["exact"],
         "patient": ["exact"],
@@ -77,7 +78,6 @@ class PredictorViewSet(
     }
     search_fields = ["result", "patient"]
     ordering_fields = ["created_date", "result"]
-    pagination_class = DefaultPagination
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

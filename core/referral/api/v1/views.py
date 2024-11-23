@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.exceptions import NotFound, PermissionDenied
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
@@ -23,11 +23,10 @@ class ReferralTokenViewset(
 ):
     serializer_class = ReferralTokenSerializer
     permission_classes = [IsAuthenticatedAndActive, IsDoctor]
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ReferralTokenFilter
-    search_fields = ["token"]
-    ordering_fields = ["created_date"]
     pagination_class = DefaultPagination
+    search_fields = ["token"]
     ordering_fields = ["created_date"]
     lookup_field = "token"
 
@@ -64,11 +63,10 @@ class ReferralRelationshipViewset(
 ):
     serializer_class = ReferralRelationshipSerializer
     permission_classes = [IsAuthenticatedAndActive, IsDoctor]
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ReferralRelationshipFilter
-    search_fields = ["refer_token__token"]
-    ordering_fields = ["created_date"]
     pagination_class = DefaultPagination
+    search_fields = ["refer_token__token"]
     ordering_fields = ["created_date"]
     lookup_field = "refer_token"
 
