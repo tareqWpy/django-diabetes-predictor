@@ -75,7 +75,7 @@ def refer_token_create_without_names(api_client, user_doctor_active):
     """
     Creates and returns a token for testing API endpoints.
     """
-    url = reverse("referral:api-v1:referral-list")
+    url = reverse("referral:api-v1:referrals-list")
     user = user_doctor_active
     api_client.force_authenticate(user=user)
     response = api_client.post(url)
@@ -94,7 +94,7 @@ def refer_token_create_with_names(api_client, user_doctor_active):
     """
     Creates and returns a token for testing API endpoints.
     """
-    url = reverse("referral:api-v1:referral-list")
+    url = reverse("referral:api-v1:referrals-list")
     user = user_doctor_active
     api_client.force_authenticate(user=user)
     data = {"first_name": "John", "last_name": "Doe"}
@@ -113,11 +113,11 @@ class TestReferralAPI:
     Test suite for referral app endpoints.
     """
 
-    ########## referral:api-v1:referral-list ##########
+    ########## referral:api-v1:referrals-list ##########
     def test_doctor_active_get_referral_token_list_200_status(
         self, api_client, user_doctor_active
     ):
-        url = reverse("referral:api-v1:referral-list")
+        url = reverse("referral:api-v1:referrals-list")
         user = user_doctor_active
         api_client.force_authenticate(user=user)
         response = api_client.get(url)
@@ -126,7 +126,7 @@ class TestReferralAPI:
     def test_patien_active_get_referral_token_list_403_status(
         self, api_client, user_patient_active
     ):
-        url = reverse("referral:api-v1:referral-list")
+        url = reverse("referral:api-v1:referrals-list")
         user = user_patient_active
         api_client.force_authenticate(user=user)
         response = api_client.get(url)
@@ -135,7 +135,7 @@ class TestReferralAPI:
     def test_doctor_active_post_referral_token_list_without_credentials_201_status(
         self, api_client, user_doctor_active
     ):
-        url = reverse("referral:api-v1:referral-list")
+        url = reverse("referral:api-v1:referrals-list")
         user = user_doctor_active
         api_client.force_authenticate(user=user)
         response = api_client.post(url)
@@ -150,7 +150,7 @@ class TestReferralAPI:
     def test_doctor_active_post_referral_token_list_with_credentials_201_status(
         self, api_client, user_doctor_active
     ):
-        url = reverse("referral:api-v1:referral-list")
+        url = reverse("referral:api-v1:referrals-list")
         user = user_doctor_active
         api_client.force_authenticate(user=user)
         response = api_client.post(url, data={"first_name": "John", "last_name": "Doe"})
@@ -166,7 +166,7 @@ class TestReferralAPI:
     def test_patient_active_post_referral_token_list_403_status(
         self, api_client, user_patient_active
     ):
-        url = reverse("referral:api-v1:referral-list")
+        url = reverse("referral:api-v1:referrals-list")
         user = user_patient_active
         api_client.force_authenticate(user=user)
         response = api_client.post(url)
@@ -175,7 +175,7 @@ class TestReferralAPI:
     def test_doctor_inactive_get_referral_token_list_403_status(
         self, api_client, user_doctor_inactive
     ):
-        url = reverse("referral:api-v1:referral-list")
+        url = reverse("referral:api-v1:referrals-list")
         user = user_doctor_inactive
         api_client.force_authenticate(user=user)
         response = api_client.get(url)
@@ -186,19 +186,19 @@ class TestReferralAPI:
     def test_patient_inactive_post_referral_token_list_403_status(
         self, api_client, user_patient_inactive
     ):
-        url = reverse("referral:api-v1:referral-list")
+        url = reverse("referral:api-v1:referrals-list")
         user = user_patient_inactive
         api_client.force_authenticate(user=user)
         response = api_client.post(url)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    ########## referral:api-v1:referral-detail ##########
+    ########## referral:api-v1:referrals-detail ##########
 
     def test_doctor_active_get_referral_token_detail_without_names_200_status(
         self, api_client, user_doctor_active, refer_token_create_without_names
     ):
         id, creator, token = refer_token_create_without_names
-        url = reverse("referral:api-v1:referral-detail", kwargs={"token": token})
+        url = reverse("referral:api-v1:referrals-detail", kwargs={"token": token})
         user = user_doctor_active
         api_client.force_authenticate(user=user)
         response = api_client.get(url)
@@ -219,7 +219,7 @@ class TestReferralAPI:
         self, api_client, user_doctor_active, refer_token_create_with_names
     ):
         id, creator, token, first_name, last_name = refer_token_create_with_names
-        url = reverse("referral:api-v1:referral-detail", kwargs={"token": token})
+        url = reverse("referral:api-v1:referrals-detail", kwargs={"token": token})
         user = user_doctor_active
         api_client.force_authenticate(user=user)
         response = api_client.get(url)
@@ -240,7 +240,7 @@ class TestReferralAPI:
         self, api_client, user_patient_active, refer_token_create_without_names
     ):
         id, creator, token = refer_token_create_without_names
-        url = reverse("referral:api-v1:referral-detail", kwargs={"token": token})
+        url = reverse("referral:api-v1:referrals-detail", kwargs={"token": token})
         user = user_patient_active
         api_client.force_authenticate(user=user)
         response = api_client.get(url)
@@ -251,7 +251,7 @@ class TestReferralAPI:
         self, api_client, user_doctor_active, refer_token_create_without_names
     ):
         id, creator, token = refer_token_create_without_names
-        url = reverse("referral:api-v1:referral-detail", kwargs={"token": token})
+        url = reverse("referral:api-v1:referrals-detail", kwargs={"token": token})
         user = user_doctor_active
         api_client.force_authenticate(user=user)
         response = api_client.delete(url)
@@ -262,7 +262,7 @@ class TestReferralAPI:
         self, api_client, user_patient_active, refer_token_create_without_names
     ):
         id, creator, token = refer_token_create_without_names
-        url = reverse("referral:api-v1:referral-detail", kwargs={"token": token})
+        url = reverse("referral:api-v1:referrals-detail", kwargs={"token": token})
         user = user_patient_active
         api_client.force_authenticate(user=user)
         response = api_client.delete(url)
@@ -270,7 +270,7 @@ class TestReferralAPI:
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     ########## referral:api-v1:get-relations-list ##########
-    def test_get_referral_relation_lisr_with_names_status_200(
+    def test_get_referral_relation_list_with_names_status_200(
         self, api_client, user_doctor_active, refer_token_create_with_names
     ):
         url = reverse("referral:api-v1:get-relations-list")
@@ -289,7 +289,6 @@ class TestReferralAPI:
         # loging in with doctor user
         api_client.force_authenticate(user=user_doctor)
         response = api_client.get(url)
-        print(response.data)
         assert response.status_code == status.HTTP_200_OK
         assert "refer_from" in response.data["results"][0]
         assert "refer_to" in response.data["results"][0]
@@ -325,31 +324,29 @@ class TestReferralAPI:
         assert response.data["results"][0]["refer_token"]["token"] == token
         assert response.data["results"][0]["refer_token"]["creator"] == creator
 
-    def test_get_referral_relatio_status_401(self, api_client):
+    def test_get_referral_relation_status_401(self, api_client):
         url = reverse("referral:api-v1:get-relations-list")
 
         response = api_client.get(url)
-        print(response.data)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_get_referral_relation_patient_status_403(
+    def test_get_referral_relation_list_patient_status_403(
         self, api_client, user_patient_active
     ):
         url = reverse("referral:api-v1:get-relations-list")
 
         api_client.force_authenticate(user=user_patient_active)
         response = api_client.get(url)
-        print(response.data)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
+    ########## referral:api-v1:get-relations-detail ##########
     def test_get_referral_relation_detail_with_names_status_200(
         self, api_client, user_doctor_active, refer_token_create_with_names
     ):
         user_doctor = user_doctor_active
         id, creator, token, first_name, last_name = refer_token_create_with_names
-        refer_token = id
         url = reverse(
-            "referral:api-v1:get-relations-detail", kwargs={"refer_token": refer_token}
+            "referral:api-v1:get-relations-detail", kwargs={"refer_token": token}
         )
 
         # creating a user based on a referral token created by doctor
@@ -364,5 +361,40 @@ class TestReferralAPI:
         # loging in with doctor user
         api_client.force_authenticate(user=user_doctor)
         response = api_client.get(url)
-        print(response.data)
         assert response.status_code == status.HTTP_200_OK
+        assert "refer_from" in response.data
+        assert "refer_to" in response.data
+        assert "refer_token" in response.data
+        assert response.data["refer_from"]["user"]["email"] == user_doctor.email
+        assert (
+            response.data["refer_from"]["user"]["user_type"]
+            == user_doctor.user_type
+            == UserType.doctor.label
+        )
+        assert response.data["refer_from"]["user"]["email"] == creator["user"]["email"]
+        assert (
+            response.data["refer_from"]["user"]["user_type"]
+            == creator["user"]["user_type"]
+        )
+        assert response.data["refer_to"]["user"]["email"] == user_patient.email
+        assert (
+            response.data["refer_to"]["user"]["user_type"]
+            == user_patient.user_type
+            == UserType.patient.label
+        )
+        assert response.data["refer_to"]["first_name"] == first_name
+        assert response.data["refer_to"]["last_name"] == last_name
+        assert response.data["refer_token"]["token"] == token
+        assert response.data["refer_token"]["creator"] == creator
+
+    def test_get_referral_relation_detail_patient_status_403(
+        self, api_client, user_patient_active, refer_token_create_with_names
+    ):
+        id, creator, token, first_name, last_name = refer_token_create_with_names
+        url = reverse(
+            "referral:api-v1:get-relations-detail", kwargs={"refer_token": token}
+        )
+
+        api_client.force_authenticate(user=user_patient_active)
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_403_FORBIDDEN

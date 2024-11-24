@@ -43,18 +43,6 @@ class ReferralTokenViewset(
             )
 
 
-class AnonReferralTokenViewset(
-    mixins.RetrieveModelMixin,
-    viewsets.GenericViewSet,
-):
-    serializer_class = ReferralTokenSerializer
-    lookup_field = "token"
-    permission_classes = [AllowAny]
-
-    def get_queryset(self):
-        return ReferralToken.objects.filter(token=self.kwargs[self.lookup_field])
-
-
 class ReferralRelationshipViewset(
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
@@ -76,7 +64,8 @@ class ReferralRelationshipViewset(
         if profile.user.type in [UserType.doctor.value, UserType.superuser.value]:
             try:
                 return ReferralRelationship.objects.get(
-                    refer_from=profile, refer_token=self.kwargs[self.lookup_field]
+                    refer_from=profile,
+                    refer_token__token=self.kwargs[self.lookup_field],
                 )
             except ReferralRelationship.DoesNotExist:
                 raise NotFound("Referral relationship not found.")
@@ -97,3 +86,15 @@ class ReferralRelationshipViewset(
             raise PermissionDenied(
                 {"details": "Access denied: you must be a doctor to use this feature."}
             )
+
+
+class AnonReferralTokenViewset(
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = ReferralTokenSerializer
+    permission_classes = [AllowAny]
+    lookup_field = "token"
+
+    def get_queryset(self):
+        return ReferralToken.objects.filter(token=self.kwargs[self.lookup_field])
