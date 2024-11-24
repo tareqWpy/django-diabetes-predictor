@@ -86,15 +86,3 @@ class ReferralRelationshipViewset(
             raise PermissionDenied(
                 {"details": "Access denied: you must be a doctor to use this feature."}
             )
-
-
-class AnonReferralTokenViewset(
-    mixins.RetrieveModelMixin,
-    viewsets.GenericViewSet,
-):
-    serializer_class = ReferralTokenSerializer
-    permission_classes = [AllowAny]
-    lookup_field = "token"
-
-    def get_queryset(self):
-        return ReferralToken.objects.filter(token=self.kwargs[self.lookup_field])
