@@ -62,7 +62,7 @@ class PredictorSerializers(serializers.ModelSerializer):
             "absolute_url",
             "created_date",
         ]
-        read_only_fields = ["patient", "result", "created_date"]
+        read_only_fields = ["id", "patient", "result", "created_date"]
 
     def get_abs_url(self, obj):
         request = self.context.get("request")

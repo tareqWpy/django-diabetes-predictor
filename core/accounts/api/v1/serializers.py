@@ -110,7 +110,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ["id", "user", "first_name", "last_name", "image"]
-        read_only_fields = ["user", "created_date"]
+        read_only_fields = ["id", "user", "created_date"]
 
     def validate(self, attrs):
         user = self.context["request"].user
