@@ -1,15 +1,35 @@
-from accounts.api.v1.serializers import ProfileSerializer, UserInstanceSerializer
-from accounts.models import Profile, UserType
+from accounts.models import Profile, User, UserType
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
+from pkg_resources import require
 from rest_framework import serializers
 
 from ...models import ReferralRelationship, ReferralToken
-from ..utils import generate_unique_refer_token
+
+
+class UserInstanceSerializerRO(serializers.ModelSerializer):
+    user_type = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "email",
+            "user_type",
+        ]
+        read_only_fields = ["id", "email", "user_type"]
+
+    def get_user_type(self, obj):
+        user = self.context["request"].user
+        if not user.is_authenticated:
+            raise serializers.ValidationError(
+                "You need to be logged in to update your profile."
+            )
+        return UserType(obj.type).label
 
 
 class ReferralProfileInstanceSerializer(serializers.ModelSerializer):
-    user = UserInstanceSerializer()
+    user = UserInstanceSerializerRO(read_only=True)
 
     class Meta:
         model = Profile
@@ -20,21 +40,7 @@ class ReferralProfileInstanceSerializer(serializers.ModelSerializer):
             "last_name",
             "created_date",
         ]
-        read_only_fields = ["user", "created_date"]
-
-
-class ReferralTokenInstanceSerializer(serializers.ModelSerializer):
-    creator = ReferralProfileInstanceSerializer()
-
-    class Meta:
-        model = ReferralToken
-        fields = [
-            "id",
-            "creator",
-            "token",
-            "created_date",
-        ]
-        read_only_fields = ["creator", "token", "created_date"]
+        read_only_fields = ["id", "user", "first_name", "last_name", "created_date"]
 
 
 class ReferralTokenSerializer(serializers.ModelSerializer):
@@ -50,9 +56,9 @@ class ReferralTokenSerializer(serializers.ModelSerializer):
             "last_name",
             "created_date",
         ]
-        read_only_fields = ["creator", "token", "created_date"]
+        read_only_fields = ["id", "creator", "token", "created_date"]
 
-    def create(self, validated_data):
+    def validate(self, attrs):
         user = self.context["request"].user
 
         if user.is_anonymous:
@@ -69,9 +75,21 @@ class ReferralTokenSerializer(serializers.ModelSerializer):
                 }
             )
 
-        validated_data["creator"] = profile
-        validated_data["token"] = generate_unique_refer_token()
-        return super().create(validated_data)
+        return attrs
+
+
+class ReferralTokenInstanceSerializer(serializers.ModelSerializer):
+    creator = ReferralProfileInstanceSerializer(read_only=True)
+
+    class Meta:
+        model = ReferralToken
+        fields = [
+            "id",
+            "creator",
+            "token",
+            "created_date",
+        ]
+        read_only_fields = ["id", "creator", "token", "created_date"]
 
 
 class ReferralRelationshipSerializer(serializers.ModelSerializer):

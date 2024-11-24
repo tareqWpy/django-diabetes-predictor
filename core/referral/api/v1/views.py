@@ -1,12 +1,13 @@
 from accounts.models import Profile, UserType
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
 from ...models import ReferralRelationship, ReferralToken
+from ..utils import generate_unique_refer_token
 from .filters import ReferralRelationshipFilter, ReferralTokenFilter
 from .paginations import DefaultPagination
 from .permissions import IsAuthenticatedAndActive, IsDoctor
@@ -41,6 +42,24 @@ class ReferralTokenViewset(
             raise PermissionDenied(
                 {"details": "Access denied: you must be a doctor to use this feature."}
             )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Create object here
+        user = request.user
+        profile = get_object_or_404(Profile, user=user)
+        validated_data = serializer.validated_data
+        validated_data["creator"] = profile
+        validated_data["token"] = generate_unique_refer_token()
+
+        # Based on the serializer class create method
+        referral_token = ReferralToken.objects.create(**validated_data)
+
+        return Response(
+            self.get_serializer(referral_token).data, status=status.HTTP_201_CREATED
+        )
 
 
 class ReferralRelationshipViewset(
