@@ -10,15 +10,10 @@ class PredictorAdmin(admin.ModelAdmin):
 
     list_display = (
         "id",
-        "get_full_name",
-        "patient",
         "result",
         "created_date",
     )
-    list_filter = ("created_date", "female_age")
-    search_fields = ("patient__first_name", "patient__last_name")
     ordering = ("-created_date",)
-    readonly_fields = ("created_date",)
 
 
 """

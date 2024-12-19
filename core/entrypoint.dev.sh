@@ -26,17 +26,6 @@ main() {
 
             echo_green "Starting server..."
             exec python manage.py runserver 0.0.0.0:8000
-
-            ;;
-        celery-worker)
-            echo_green "Starting Celery worker..."
-            exec celery -A core worker -l INFO
-
-            ;;
-        celery-beat)
-            echo_green "Starting Celery beat..."
-            exec celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
-
             ;;
         *)
             echo_red "Error: Unknown ROLE specified: $ROLE"

@@ -1,15 +1,4 @@
 services:
-    redis:
-        container_name: redis
-        image: redis:7.4.1
-        volumes:
-            - redis_data:/data
-        ports:
-            - "6379:6379"
-        command: redis-server --save 60 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
-        environment:
-            - REDIS_PASSWORD=${REDIS_PASSWORD}
-
     postgres:
         image: postgres:15
         container_name: postgres
@@ -39,16 +28,6 @@ services:
             # basic settings
             - SECRET_KEY=${SECRET_KEY}
             - DEBUG=${DEBUG}
-            - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
-            # password reset timeout for api v1
-            - PASSWORD_RESET_TIMEOUT=${PASSWORD_RESET_TIMEOUT}
-            # email confirguration
-            - EMAIL_BACKEND=${EMAIL_BACKEND}
-            - EMAIL_HOST=${EMAIL_HOST}
-            - EMAIL_PORT=${EMAIL_PORT}
-            - EMAIL_USE_TLS=${EMAIL_USE_TLS}
-            - EMAIL_HOST_USER=${EMAIL_HOST_USER}
-            - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
             #  database configuration
             - PGDB_ENGINE=${PGDB_ENGINE}
             - PGDB_NAME=${PGDB_NAME}
@@ -56,77 +35,22 @@ services:
             - PGDB_PASSWORD=${PGDB_PASSWORD}
             - PGDB_HOST=${PGDB_HOST}
             - PGDB_PORT=${PGDB_PORT}
-            # redis configuration
-            - REDIS_PASSWORD=${REDIS_PASSWORD}
-            # csrf and site configuration
-            # - VPS_ORIGIN=${VPS_ORIGIN}
-            # # security configuration
-            # - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+
         depends_on:
-            - redis
             - postgres
         restart: always
 
-    # celery-worker:
-    #     build:
-    #         context: ./core
-    #         dockerfile: Dockerfile.prod
-    #     container_name: celery-worker
-    #     volumes:
-    #         - ./core:/home/app/core
-    #     environment:
-    #         # role for entrypoint
-    #         - ROLE=celery-worker
-    #         # database configuration
-    #         - PGDB_ENGINE=${PGDB_ENGINE}
-    #         - PGDB_NAME=${PGDB_NAME}
-    #         - PGDB_USER=${PGDB_USER}
-    #         - PGDB_PASSWORD=${PGDB_PASSWORD}
-    #         - PGDB_HOST=${PGDB_HOST}
-    #         - PGDB_PORT=${PGDB_PORT}
-    #     depends_on:
-    #         - redis
-    #         - backend
-    #         - postgres
-    #     restart: always
-
-    # celery-beat:
-    #     build:
-    #         context: ./core
-    #         dockerfile: Dockerfile.prod
-    #     container_name: celery-beat
-    #     environment:
-    #         # role for entrypoint
-    #         - ROLE=celery-beat
-    #         # database configuration
-    #         - PGDB_ENGINE=${PGDB_ENGINE}
-    #         - PGDB_NAME=${PGDB_NAME}
-    #         - PGDB_USER=${PGDB_USER}
-    #         - PGDB_PASSWORD=${PGDB_PASSWORD}
-    #         - PGDB_HOST=${PGDB_HOST}
-    #         - PGDB_PORT=${PGDB_PORT}
-    #     volumes:
-    #         - ./core:/home/app/core
-    #     depends_on:
-    #         - redis
-    #         - backend
-    #         - postgres
-
     nginx:
-        build:
-            context: .
-            dockerfile: nginx/Dockerfile.prod
+        image: nginx:stable-alpine
         container_name: nginx
         ports:
             - "80:80"
             - "443:443"
         volumes:
-            # - /etc/letsencrypt/live/djangotech.online/fullchain.pem:/etc/nginx/ssl/fullchain.pem:z
-            # - /etc/letsencrypt/live/djangotech.online/privkey.pem:/etc/nginx/ssl/privkey.pem:z
+            - ./default.conf:/etc/nginx/conf.d/default.conf
             - static_volume:/home/app/core/static
             - media_volume:/home/app/core/media
         depends_on:
-            - redis
             - backend
         restart: always
 
@@ -134,4 +58,3 @@ volumes:
     static_volume:
     media_volume:
     postgres_data:
-    redis_data:

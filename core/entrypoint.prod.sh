@@ -16,12 +16,6 @@ echo_red() {
     echo -e "${RED}$1${NC}"
 }
 
-# Function to check if required environment variables are set
-check_env_vars() {
-    [[ -v PGDB_NAME ]] || { echo_red "Error: DATABASE environment variable (PGDB_NAME) is not set."; exit 1; }
-    [[ -v PGDB_HOST ]] || { echo_red "Error: HOST environment variable (PGDB_HOST) is not set."; exit 1; }
-    [[ -v PGDB_PORT ]] || { echo_red "Error: PORT environment variable (PGDB_PORT) is not set."; exit 1; }
-}
 
 # Function to wait for PostgreSQL to be available
 wait_for_postgres() {
@@ -35,8 +29,7 @@ wait_for_postgres() {
 # Main script execution
 main() {
     # Only check for environment variables and PostgreSQL if the role is backend or celery-worker
-    if [[ "$ROLE" == "backend" || "$ROLE" == "celery-worker" ]]; then
-        check_env_vars
+    if [ "$ROLE" == "backend" ]; then
         wait_for_postgres
     fi
 
@@ -50,17 +43,6 @@ main() {
 
             echo_green "Starting Gunicorn server..."
             exec gunicorn core.wsgi --bind 0.0.0.0:8000
-
-            ;;
-        celery-worker)
-            echo_green "Starting Celery worker..."
-            exec celery -A core worker -l INFO
-
-            ;;
-        celery-beat)
-            echo_green "Starting Celery beat..."
-            exec celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
-
             ;;
         *)
             echo_red "Error: Unknown ROLE specified: $ROLE"

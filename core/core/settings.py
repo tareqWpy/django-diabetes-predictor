@@ -10,10 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from datetime import timedelta
 from pathlib import Path
-
-from celery.schedules import crontab
 
 # importing decouple for .env
 from decouple import config
@@ -51,20 +48,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # ? via manage.py
-    "accounts",
     "predictor",
-    "referral",
     # ? via pip
     "rest_framework",
-    # commented beacuse the default authentication is based on JWT authentication
-    "rest_framework.authtoken",
-    "django_filters",
     "drf_yasg",
-    "rest_framework_simplejwt",
-    "mail_templated",
-    "djoser",
-    "django_celery_beat",
-    "django_celery_results",
 ]
 
 MIDDLEWARE = [
@@ -164,123 +151,14 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# ! user manager config
-AUTH_USER_MODEL = "accounts.User"
-
 # configurations rest_famework
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-        # commented beacuse the default authentication is based on JWT authentication
-        # "rest_framework.authentication.TokenAuthentication",
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ]
 }
 
-
-# EMAIL
-EMAIL_BACKEND = config(
-    "EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
-)
-EMAIL_HOST = config("EMAIL_HOST", default="smtp4dev")
-EMAIL_PORT = config("EMAIL_PORT", default=25)
-# the EMAIL_USE_TLS disabled because of development mode
-# to prevent STARTTLS error
-# ! must be enable for production mode
-# EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=False)
-EMAIL_HOST_USER = config("EMAIL_HOST_USER", default=None)
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default=None)
-
-# with this environment variable we can configure the token lifetime
-PASSWORD_RESET_TIMEOUT = config("PASSWORD_RESET_TIMEOUT", cast=int, default=120)
-
-# djoser configuration
-DJOSER = {
-    "LOGIN_FIELD": "email",
-    # "USERNAME_CHANGED_EMAIL_CONFIRMATION": True,
-    # "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
-    "SEND_CONFIRMATION_EMAIL": True,
-    "SET_PASSWORD_RETYPE": True,
-    "USERNAME_RESET_CONFIRM_URL": "password/reset/comfirm/{uid}/{token}",
-    "PASSWORD_RESET_CONFIRM_URL": "email/reset/comfirm/{uid}/{token}",
-    "ACTIVATION_URL": "activate/{uid}/{token}",
-    "SEND_ACTIVATION_EMAIL": True,
-    "SERIALIZERS": {
-        "user_create": "accounts.api.v1.serializers.RegistrationSerializer",
-        "user_create_password_retype": "accounts.api.v1.serializers.UserCreatePasswordRetypeSerializer",
-    },
-}
-
-
-# JWT configuration
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=180),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=50),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": False,
-    "ALGORITHM": "HS256",
-    "VERIFYING_KEY": None,
-    "AUDIENCE": None,
-    "ISSUER": None,
-    "JWK_URL": None,
-    "LEEWAY": 0,
-    "AUTH_HEADER_TYPES": ("Bearer",),
-    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-    "USER_ID_FIELD": "id",
-    "USER_ID_CLAIM": "user_id",
-    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-    "TOKEN_TYPE_CLAIM": "token_type",
-    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
-    "JTI_CLAIM": "jti",
-    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
-    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
-    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
-}
-
-
-# celery configuration
-# redis is a broker for celery
-# if you don't have docker, you should use redis as broker like this:
-# CELERY_BROKER_URL = 'redis://localhost:6379'
-# we use decouple for easier handling for password changes in future
-
-CELERY_BROKER_URL = f"redis://:{config('REDIS_PASSWORD')}@redis:6379/0"
-
-# ! comment CELERY_RESULT_BACKEND for only development environment
-# CELERY_RESULT_BACKEND = (
-#     f"db+postgresql://root:{config('PGDB_PASSWORD')}@postgres:5432/db_postgres"
-# )
-
-CELERY_RESULT_EXTENDED = True
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-
-CELERY_BEAT_SCHEDULE = {
-    "delete_inactive_users": {
-        "task": "accounts.tasks.delete_inactive_users",
-        "schedule": crontab(hour=12),
-    }
-}
-
-# caches configuration
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
-    }
-}
-
-
-# csrf configuration
-# CSRF_TRUSTED_ORIGINS = [
-#     config("VPS_ORIGIN", default="https://localhost"),
-# ]
-
-
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
+CORS_ALLOW_ALL_ORIGINS = True
