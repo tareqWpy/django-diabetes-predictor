@@ -2,36 +2,31 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from ...models import Predictor
+from ...models import Diabetes
 
 
 class PredictorSerializers(serializers.ModelSerializer):
-
     relative_url = serializers.URLField(source="get_absolute_api_url", read_only=True)
     absolute_url = serializers.SerializerMethodField(method_name="get_abs_url")
 
     class Meta:
-        model = Predictor
+        model = Diabetes
         fields = [
             "id",
-            "female_age",
-            "AMH",
-            "FSH",
-            "no_embryos",
-            "endoendometerial_tickness",
-            "sperm_count",
-            "sperm_morphology",
-            "follicle_size",
-            "no_of_retreived_oocytes",
-            "qality_of_embryo",
-            "quality_of_retreived_oocytes_MI",
-            "quality_of_retreived_oocytes_MII",
-            "result",
+            "pregnancies",
+            "glucose",
+            "blood_pressure",
+            "skin_thickness",
+            "insulin",
+            "bmi",
+            "diabetes_pedigree_function",
+            "age",
+            "outcome",
             "relative_url",
             "absolute_url",
             "created_date",
         ]
-        read_only_fields = ["id", "result", "created_date"]
+        read_only_fields = ["id", "outcome", "created_date"]
 
     def get_abs_url(self, obj):
         request = self.context.get("request")
@@ -49,5 +44,4 @@ class PredictorSerializers(serializers.ModelSerializer):
         return rep
 
     def create(self, validated_data):
-
         return super().create(validated_data)

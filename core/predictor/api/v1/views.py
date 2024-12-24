@@ -33,13 +33,13 @@ class PredictorViewSet(
         scaled_data = self.preprocess_data(validated_data)
         result = self.get_prediction(scaled_data)
 
-        predictor_instance = serializer.save(result=result)
+        predictor_instance = serializer.save(outcome=result)
 
         return Response(
             {
                 "details": {
                     # returns result as a number
-                    "result": result[0],
+                    "outcome": result[0],
                     "id": predictor_instance.id,
                 }
             },
@@ -50,24 +50,20 @@ class PredictorViewSet(
         scaler_file_path = settings.SERVICES_DIR.joinpath("scaler.pkl")
         scaler = joblib.load(scaler_file_path)
         features = [
-            data["female_age"],
-            data["AMH"],
-            data["FSH"],
-            data["no_embryos"],
-            data["endoendometerial_tickness"],
-            data["sperm_count"],
-            data["sperm_morphology"],
-            data["follicle_size"],
-            data["no_of_retreived_oocytes"],
-            data["qality_of_embryo"],
-            data["quality_of_retreived_oocytes_MI"],
-            data["quality_of_retreived_oocytes_MII"],
+            data["pregnancies"],
+            data["glucose"],
+            data["blood_pressure"],
+            data["skin_thickness"],
+            data["insulin"],
+            data["bmi"],
+            data["diabetes_pedigree_function"],
+            data["age"],
         ]
 
         return scaler.transform([features])
 
     def get_prediction(self, data):
-        model_file_path = settings.SERVICES_DIR.joinpath("Stacking_clf.pkl")
+        model_file_path = settings.SERVICES_DIR.joinpath("model.pkl")
         model = joblib.load(model_file_path)
         result = model.predict(data)
 
