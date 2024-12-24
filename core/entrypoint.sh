@@ -28,13 +28,13 @@ wait_for_postgres() {
 
 # Main script execution
 main() {
-    # Only check for environment variables and PostgreSQL if the role is backend or celery-worker
-    if [ "$ROLE" == "backend" ]; then
+    # Only check for environment variables and PostgreSQL if the role is core
+    if [ "$ROLE" == "core" ]; then
         wait_for_postgres
     fi
 
     case "$ROLE" in
-        backend)
+        core)
             echo_green "Creating and applying migrations..."
             python manage.py makemigrations && python manage.py migrate
 

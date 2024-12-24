@@ -20,7 +20,7 @@ RUN apt-get update && \
 RUN pip install --upgrade pip
 RUN pip install flake8==6.0.0
 COPY . /usr/src/app/
-RUN flake8 --ignore=E501,F401 .
+RUN flake8 --ignore=E402,E501,F401 .
 
 # install python dependencies
 COPY ./requirements.txt .
@@ -55,12 +55,12 @@ COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 
-# copy entrypoint.prod.sh
-COPY ./entrypoint.prod.sh .
-RUN sed -i 's/\r$//g'  $APP_HOME/entrypoint.prod.sh
+# copy entrypoint.sh
+COPY ./entrypoint.sh .
+RUN sed -i 's/\r$//g'  $APP_HOME/entrypoint.sh
 RUN apt-get update && apt-get install -y dos2unix && \
-    dos2unix entrypoint.prod.sh && \
-    chmod +x entrypoint.prod.sh
+    dos2unix entrypoint.sh && \
+    chmod +x entrypoint.sh
 
 # copy project
 COPY . $APP_HOME
@@ -71,5 +71,5 @@ RUN chown -R app:app $APP_HOME
 # change to the app user
 USER app
 
-# run entrypoint.prod.sh
-ENTRYPOINT ["/bin/bash", "./entrypoint.prod.sh"]
+# run entrypoint.sh
+ENTRYPOINT ["/bin/bash", "./entrypoint.sh"]

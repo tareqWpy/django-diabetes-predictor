@@ -4,7 +4,7 @@ python-decouple
 pillow
 djangorestframework
 joblib
-scikit-learn==1.5.2
+scikit-learn==1.6.0
 
 # third-party modules
 markdown     
