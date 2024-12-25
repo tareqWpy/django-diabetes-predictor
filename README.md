@@ -10,15 +10,15 @@
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original-wordmark.svg" alt="Docker" width="80px" height="80px"/></a>
 </p>
 
-### 📋 Overview
+### Overview
 
 -   [Overview](#overview)
 -   [Features](#features)
--   [Setup](#setup)
--   [Database Schema](#database-schema)
+-   [Setup](#️setup)
+-   [Database Schema](#️database-schema)
 -   [Bugs or Opinions](#bugs-or-opinions)
 
-### 🌟 Features
+### Features
 
 -   **🐳 Dockerized**: Fully containerized using Docker for easy deployment and consistency across environments.
 -   **🌐 RESTful API**: Well-designed API built with Django REST Framework, following best practices.
@@ -26,7 +26,7 @@
 -   **🐘 PostgreSQL Database**: Utilizes PostgreSQL for robust data storage and retrieval.
 -   **🚀 Django LTS (4.2.16)**: Built on Django's Long Term Support version for stability and long-term support.
 
-### ⚙️ Setup
+### Setup
 
 To get this repository, run the following command in your Git-enabled terminal:
 
@@ -42,7 +42,7 @@ Navigate to your project directory where the docker-compose.yml file exists:
 docker compose up --build
 ```
 
-### 🗄️ Database Schema
+### Database Schema
 
 A simple view of the project model schema.
 
@@ -50,6 +50,6 @@ A simple view of the project model schema.
 <img src="./previews/models-schema.png" alt="database schema" width="300"/>
 </p>
 
-### 🐞 Bugs or Opinions
+### Bugs or Opinions
 
 Feel free to let me know if there are any issues or requests you have for this repo! 😊
