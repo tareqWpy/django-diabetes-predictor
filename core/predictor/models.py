@@ -1,7 +1,9 @@
 from django.db import models
 from django.urls import reverse
 
+
 class Diabetes(models.Model):
+
     pregnancies = models.IntegerField()
     glucose = models.IntegerField()
     blood_pressure = models.IntegerField()
@@ -11,7 +13,6 @@ class Diabetes(models.Model):
     diabetes_pedigree_function = models.DecimalField(max_digits=4, decimal_places=3)
     age = models.IntegerField()
     outcome = models.IntegerField()
-
     created_date = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_api_url(self):

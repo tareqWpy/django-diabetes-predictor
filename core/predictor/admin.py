@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Predictor
+from .models import Diabetes
 
 
 class PredictorAdmin(admin.ModelAdmin):
@@ -10,7 +10,7 @@ class PredictorAdmin(admin.ModelAdmin):
 
     list_display = (
         "id",
-        "result",
+        "outcome",
         "created_date",
     )
     ordering = ("-created_date",)
@@ -20,4 +20,4 @@ class PredictorAdmin(admin.ModelAdmin):
 Registeration classes for Admin panel.
 """
 
-admin.site.register(Predictor, PredictorAdmin)
+admin.site.register(Diabetes, PredictorAdmin)

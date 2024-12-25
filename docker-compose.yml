@@ -1,17 +1,15 @@
 services:
-    pgdb:
+    postgres:
         image: postgres:14
-        container_name: pgdb
+        container_name: postgres
         volumes:
-            - pgdb_data:/var/lib/postgresql/data/
+            - postgres_volume:/var/lib/postgresql/data/
         environment:
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
             - POSTGRES_DB=${POSTGRES_DB}
         ports:
             - "5432:5432"
-        networks:
-            - app-network
 
     core:
         build:
@@ -37,11 +35,11 @@ services:
             - PGDB_PASSWORD=${PGDB_PASSWORD}
             - PGDB_HOST=${PGDB_HOST}
             - PGDB_PORT=${PGDB_PORT}
+            # app configuration
+            - MPLCONFIGDIR=/tmp/matplotlib
         depends_on:
-            - pgdb
+            - postgres
         restart: always
-        networks:
-            - app-network
 
     nginx:
         image: nginx:stable-alpine
@@ -55,14 +53,8 @@ services:
         depends_on:
             - core
         restart: always
-        networks:
-            - app-network
-
-networks:
-    app-network:
-        driver: bridge
 
 volumes:
     static_volume:
     media_volume:
-    pgdb_data:
+    postgres_volume:

@@ -67,7 +67,8 @@ COPY . $APP_HOME
 
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME
-
+RUN mkdir -p /home/app/.config/matplotlib && \
+    chown -R app:app /home/app/.config
 # change to the app user
 USER app
 

@@ -5,6 +5,7 @@ pillow
 djangorestframework
 joblib
 scikit-learn==1.6.0
+matplotlib
 
 # third-party modules
 markdown     

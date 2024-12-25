@@ -1,0 +1,20 @@
+services:
+    core:
+        build:
+            context: ./core
+            dockerfile: Dockerfile.dev
+        container_name: core
+        volumes:
+            - ./core:/home/app/core
+        ports:
+            - "127.0.0.1:8000:8000"
+        environment:
+            # role for entrypoint
+            - ROLE=core
+            # basic settings
+            - SECRET_KEY=test
+            - DEBUG=True
+            #  database configuration
+            - DB_ENGINE=django.db.backends.sqlite3
+            - DB_NAME=/home/app/core/db.sqlite3
+        restart: always

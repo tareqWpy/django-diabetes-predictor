@@ -36,7 +36,7 @@ main() {
     case "$ROLE" in
         core)
             echo_green "Creating and applying migrations..."
-            python manage.py makemigrations && python manage.py migrate
+            python manage.py makemigrations && python manage.py makemigrations predictor && python manage.py migrate
 
             echo_green "Collecting static files..."
             python manage.py collectstatic --noinput

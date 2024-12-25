@@ -29,7 +29,8 @@ SERVICES_DIR = Path(BASE_DIR).joinpath("predictor", "services")
 SECRET_KEY = config("SECRET_KEY", default="test")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG", cast=bool, default=True)
+# DEBUG = config("DEBUG", cast=bool, default=True)
+DEBUG = True
 
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
@@ -179,7 +180,4 @@ CORS_ALLOW_HEADERS = [
     "x-csrftoken",
     "x-requested-with",
 ]
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost",
-    "http://127.0.0.1"
-]
+CSRF_TRUSTED_ORIGINS = ["http://localhost", "http://127.0.0.1"]

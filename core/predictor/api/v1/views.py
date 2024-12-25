@@ -2,16 +2,14 @@ import os
 from pathlib import Path
 
 import joblib
+import matplotlib
 import sklearn
 from django.conf import settings
 from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
 
-from ...models import Predictor
+from ...models import Diabetes
 from .serializers import PredictorSerializers
-
-# Set the SERVICES_DIR path to the "services" directory,
-# which is located two levels up from the current directory.
 
 
 class PredictorViewSet(
@@ -23,7 +21,7 @@ class PredictorViewSet(
 ):
 
     serializer_class = PredictorSerializers
-    queryset = Predictor.objects.all()
+    queryset = Diabetes.objects.all()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
