@@ -34,7 +34,7 @@ To get this repository, run the following command in your Git-enabled terminal:
 git clone https://github.com/tareqWpy/django-diabetes-predictor.git
 ```
 
-#### 🐳 One command and bingo!:
+#### 🐳 One command and bingo!
 
 Navigate to your project directory where the docker-compose.yml file exists:
 
