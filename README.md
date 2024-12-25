@@ -14,8 +14,8 @@
 
 -   [Overview](#overview)
 -   [Features](#features)
--   [Setup](#️setup)
--   [Database Schema](#️database-schema)
+-   [Setup](#setup)
+-   [Database Schema](#database-schema)
 -   [Bugs or Opinions](#bugs-or-opinions)
 
 ### Features
