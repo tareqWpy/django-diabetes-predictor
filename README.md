@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
-<h1 align="center">Python Telegram Bot</h1>
-<h3 align="center">This is simple python telegram bot based on telegram bot api for testing</h3>
+<h1 align="center">Django Diabetes Predictor 🩺</h1>
+<h3 align="center">A sample project that utilizes Django REST Framework and an SVM model to predict diabetes, showcasing how to build a predictive API.</h3>
 
 <p align="center" style="display:flex; gap:16px; justify-content:center; align-items:center">
 <a href="https://www.python.org/" target="_blank"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original-wordmark.svg" alt="Python" width="80px" height="80px"/></a>
@@ -10,23 +10,23 @@
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original-wordmark.svg" alt="Docker" width="80px" height="80px"/></a>
 </p>
 
-### Overview
+### 📋 Overview
 
 -   [Overview](#overview)
 -   [Features](#features)
--   [Database schema](#database-schema)
 -   [Setup](#setup)
--   [Bugs or Opinion](#bugs-or-opinion)
+-   [Database Schema](#database-schema)
+-   [Bugs or Opinions](#bugs-or-opinions)
 
-### Features
+### 🌟 Features
 
--   **Dockerized**: Fully containerized using Docker for easy deployment and consistency across environments.
--   **RESTful API**: Well-designed API built with Django REST Framework, following best practices.
--   **Development and Production Environments**: Separate configurations optimized for development and production.
--   **PostgreSQL Database**: Utilizes PostgreSQL for robust data storage and retrieval.
--   **Django LTS (4.2.16)**: Built on Django's Long Term Support version for stability and long-term support.
+-   **🐳 Dockerized**: Fully containerized using Docker for easy deployment and consistency across environments.
+-   **🌐 RESTful API**: Well-designed API built with Django REST Framework, following best practices.
+-   **🛠️ Development and Production Environments**: Separate configurations optimized for development and production.
+-   **🐘 PostgreSQL Database**: Utilizes PostgreSQL for robust data storage and retrieval.
+-   **🚀 Django LTS (4.2.16)**: Built on Django's Long Term Support version for stability and long-term support.
 
-### Setup
+### ⚙️ Setup
 
 To get this repository, run the following command in your Git-enabled terminal:
 
@@ -34,7 +34,7 @@ To get this repository, run the following command in your Git-enabled terminal:
 git clone https://github.com/tareqWpy/django-diabetes-predictor.git
 ```
 
-### 🐳 One command and bingo!:
+#### 🐳 One command and bingo!:
 
 Navigate to your project directory where the docker-compose.yml file exists:
 
@@ -42,7 +42,7 @@ Navigate to your project directory where the docker-compose.yml file exists:
 docker compose up --build
 ```
 
-### Database schema
+### 🗄️ Database Schema
 
 A simple view of the project model schema.
 
