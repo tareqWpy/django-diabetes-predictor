@@ -29,8 +29,7 @@ SERVICES_DIR = Path(BASE_DIR).joinpath("predictor", "services")
 SECRET_KEY = config("SECRET_KEY", default="test")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = config("DEBUG", cast=bool, default=True)
-DEBUG = True
+DEBUG = config("DEBUG", cast=bool, default=True)
 
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
@@ -52,7 +51,8 @@ INSTALLED_APPS = [
     "predictor",
     # ? via pip
     "rest_framework",
-    "drf_yasg",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",  # required for Django collectstatic discovery
     "corsheaders",
 ]
 
@@ -155,7 +155,20 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-    ]
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# swagger configuration
+SPECTACULAR_SETTINGS = {
+    "TITLE": "DRF Diabetes Predictor",
+    "DESCRIPTION": "This is a documentation for DRF Diabetes Prediction",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
+    # OTHER SETTINGS
 }
 
 # if we use SSL, then True

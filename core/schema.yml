@@ -1,0 +1,168 @@
+openapi: 3.0.3
+info:
+  title: DRF Diabetes Predictor
+  version: 1.0.0
+  description: This is a documentation for DRF Diabetes Prediction
+paths:
+  /predictor/api/v1/predictor/:
+    get:
+      operationId: predictor_api_v1_predictor_list
+      tags:
+      - predictor
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PredictorSerializers'
+          description: ''
+    post:
+      operationId: predictor_api_v1_predictor_create
+      tags:
+      - predictor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PredictorSerializers'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PredictorSerializers'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PredictorSerializers'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictorSerializers'
+          description: ''
+  /predictor/api/v1/predictor/{id}/:
+    get:
+      operationId: predictor_api_v1_predictor_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this diabetes.
+        required: true
+      tags:
+      - predictor
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PredictorSerializers'
+          description: ''
+    delete:
+      operationId: predictor_api_v1_predictor_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this diabetes.
+        required: true
+      tags:
+      - predictor
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    PredictorSerializers:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        pregnancies:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        glucose:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        blood_pressure:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        skin_thickness:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        insulin:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        bmi:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,1})?$
+        diabetes_pedigree_function:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,3})?$
+        age:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        outcome:
+          type: integer
+          readOnly: true
+        relative_url:
+          type: string
+          format: uri
+          readOnly: true
+        absolute_url:
+          type: string
+          readOnly: true
+        created_date:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - absolute_url
+      - age
+      - blood_pressure
+      - bmi
+      - created_date
+      - diabetes_pedigree_function
+      - glucose
+      - id
+      - insulin
+      - outcome
+      - pregnancies
+      - relative_url
+      - skin_thickness
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
